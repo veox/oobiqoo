@@ -24,14 +24,16 @@ interface ERC20FakeInterface {
     function transfer(address /* _to */, uint256 /* _amount */) returns (bool);
 }
 
-//
+// FIXME: *must* be upgradable!
 contract UBI is MintableToken, BurnableToken {
     ///
     uint256 public lastMintInvocationTime;
 
     ///
-    function mintAllowance() public view returns(uint) {
-        return now - lastMintInvocationTime;
+    function mintAllowance() public view returns(uint256) {
+        int256 diff = now - lastMintInvocationTime;
+        assert(diff >= 0);
+        return uint256(diff);
     }
 
     /// @dev overridden: MintableToken.mint(address, uint256)
@@ -56,21 +58,21 @@ contract UBI is MintableToken, BurnableToken {
         return mint(owner, mintAllowance());
     }
 
-    /// @dev anti-EIP223
-    function forwardTransfer(address _otherTokenAddress, address _to, uint256 _amount) external onlyOwner returns (bool) {
-        //
+    /// @dev forward "transfer" of a different token
+    function otherTransfer(address _otherTokenAddress, address _to, uint256 _amount) external onlyOwner returns (bool) {
+        // to transfer _this_ token, use regular `transfer()`
         require(_otherTokenAddress != this.address);
 
         //
         ERC20FakeInterface otherToken = ERC20FakeInterface(_otherTokenAddress);
 
-        //
+        // may throw, return true or false: up to "other" token
         return otherToken.transfer.gas(msg.gas)(_to, _amount);
     }
 
     ///
     function () payable {
-        // TODO: check allowedFunctionSignatures, do delegatecall
+        // TODO: check `allowedFunctionSignatures`, do delegatecall
         throw;
     }
 }
