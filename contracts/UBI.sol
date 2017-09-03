@@ -31,7 +31,20 @@ contract UBI is MintableToken, BurnableToken {
 
     /// @dev overridden: MintableToken.mint(address, uint256)
     function mint(address _to, uint256 _amount) public onlyOwner canMint returns (bool) {
-        // TODO
+        // check
+        require(mintAllowance() >= _amount);
+
+        // mark
+        lastMintInvocationTime = now;
+
+        // transfer all to self...
+        assert(super.mint(owner, canMintThisMuch));
+
+        // ...then specified amount to whomever
+        assert(super.transfer(_to, _amount));
+
+        return true;
+
     }
 
     /// @dev convenience: fall through with owner/full allowance
