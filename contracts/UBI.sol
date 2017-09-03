@@ -52,6 +52,18 @@ contract UBI is MintableToken, BurnableToken {
         return mint(owner, mintAllowance());
     }
 
+    /// @dev anti-EIP223
+    function forwardTransfer(address _otherTokenAddress, address _to, uint256 _amount) external onlyOwner returns (bool) {
+        //
+        require(_otherTokenAddress != this.address);
+
+        //
+        ERC20FakeInterface otherToken = ERC20FakeInterface(_otherTokenAddress);
+
+        //
+        return otherToken.transfer.gas(msg.gas)(_to, _amount);
+    }
+
     ///
     function () payable {
         // TODO: check allowedFunctionSignatures, do delegatecall
