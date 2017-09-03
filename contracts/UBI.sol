@@ -49,7 +49,6 @@ contract UBI is MintableToken, BurnableToken {
         assert(super.transfer(_to, _amount));
 
         return true;
-
     }
 
     /// @dev convenience: fall through with owner/full allowance
