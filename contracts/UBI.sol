@@ -19,6 +19,11 @@ import 'MintableToken.sol';
 // Also, I don't like how they don't prefix events with `log`, and don't
 // stylistically separate modifiers, function names, and variable names.
 
+/// @dev minimal, with the only signature that will be used
+interface ERC20FakeInterface {
+    function transfer(address /* _to */, uint256 /* _amount */) returns (bool);
+}
+
 //
 contract UBI is MintableToken, BurnableToken {
     ///
