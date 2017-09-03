@@ -11,13 +11,32 @@ pragma experimental SMTChecker;
  * Compile: TODO
  */
 
-contract UBI {
+// FIXME: use ethpm for these zeppelins
+import 'BurnableToken.sol';
+import 'MintableToken.sol';
+// TODO: openZeppelin uses inheritance instead of libraries, which _may_
+// be OK here, but _might_ also become a chain ball pretty fast;
+// Also, I don't like how they don't prefix events with `log`, and don't
+// stylistically separate modifiers, function names, and variable names.
+
+//
+contract UBI is MintableToken, BurnableToken {
     ///
     uint256 public lastMintInvocationTime;
 
     ///
     function mintAllowance() public view returns(uint) {
         return now - lastMintInvocationTime;
+    }
+
+    /// @dev overridden: MintableToken.mint(address, uint256)
+    function mint(address _to, uint256 _amount) public onlyOwner canMint returns (bool) {
+        // TODO
+    }
+
+    /// @dev convenience: fall through with owner/full allowance
+    function mint() external onlyOwner canMint returns (bool) {
+        return mint(owner, mintAllowance());
     }
 
     ///
