@@ -45,7 +45,7 @@ contract UBI is MintableToken, BurnableToken {
         lastMintInvocationTime = now;
 
         // transfer all to self...
-        assert(super.mint(owner, canMintThisMuch));
+        assert(super.mint(owner, mintAllowance()));
 
         // ...then specified amount to whomever
         assert(super.transfer(_to, _amount));
