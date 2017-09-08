@@ -11,20 +11,20 @@ pragma experimental SMTChecker;
  * Compile: TODO
  */
 
+// FIXME: OpenZeppelin uses contract inheritance instead of libraries
+// which hinders upgradability and call delegation.
+// Also, I don't like how they don't prefix events with `log`, don't
+// stylistically separate modifiers, function names, and variable names.
+
 // FIXME: use ethpm for these zeppelins
 import 'BurnableToken.sol';
 import 'MintableToken.sol';
-// TODO: openZeppelin uses inheritance instead of libraries, which _may_
-// be OK here, but _might_ also become a chain ball pretty fast;
-// Also, I don't like how they don't prefix events with `log`, and don't
-// stylistically separate modifiers, function names, and variable names.
 
 /// @dev minimal, with the only signature that will be used
 interface ERC20FakeInterface {
     function transfer(address /* _to */, uint256 /* _amount */) returns (bool);
 }
 
-// FIXME: *must* be upgradable!
 contract UBI is MintableToken, BurnableToken {
     ///
     uint256 public lastMintInvocationTime;
