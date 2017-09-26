@@ -20,12 +20,13 @@ pragma experimental SMTChecker;
 import 'BurnableToken.sol';
 import 'MintableToken.sol';
 
-/// @dev minimal, with the only signature that will be used
+/// @dev "Fake" since minimal, with the only signature that will be used.
 interface ERC20FakeInterface {
     function transfer(address /* _to */, uint256 /* _amount */) returns (bool);
 }
 
-contract UBI is MintableToken, BurnableToken {
+// FIXME: use libs instead of inheritance? (see "C3 linearization")
+contract UBI is BurnableToken, MintableToken {
     ///
     uint256 public lastMintInvocationTime;
 
