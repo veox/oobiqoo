@@ -1,9 +1,37 @@
 pragma solidity ~0.4.16;
+pragma experimental SMTChecker;
 
-contract oobiqoo {
-    address public registry;
+/*
+ * Who's who in oobiqoo?
+ * TODO: general desc
+ *
+ * Author:  Noel Maersk (veox)
+ * License: GPLv3
+ * Sources: https://gitlab.com/veox/oobiqoo (TODO: Not yet available - stay tuned!..)
+ * Compile: TODO
+ */
 
-    function hereiam() external returns(bool) {
-        return new UBI(msg.sender);
+import "./oobiqoo.solidity";
+
+// FIXME: stub!
+contract oobiqooRegistry {
+    mapping public (address => address) registry;
+
+    ///
+    function register() external returns(address) {
+        require(registry[msg.sender] == 0); // TODO: type cast?
+
+        oobiqoo o = new oobiqoo(msg.sender); // FIXME: address precomputable?
+        address a = address(o); // TODO: type cast not needed, use directly?
+        registry[msg.sender] = a;
+
+        // TODO: actually register on ENS
+
+        return a;
+    }
+
+    ///
+    function () {
+        throw;
     }
 }
