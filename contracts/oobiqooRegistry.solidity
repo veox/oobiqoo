@@ -32,6 +32,6 @@ contract oobiqooRegistry {
 
     ///
     function () {
-        throw;
+        revert();
     }
 }
