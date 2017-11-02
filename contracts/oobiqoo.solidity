@@ -33,7 +33,7 @@ contract oobiqoo is BurnableToken, MintableToken {
     ///
     function mintAllowance() public view returns(uint256) {
         int256 diff = now - lastMintInvocationTime;
-        assert(diff >= 0);
+        require(diff >= 0);
         return uint256(diff);
     }
 
@@ -49,7 +49,7 @@ contract oobiqoo is BurnableToken, MintableToken {
         assert(super.mint(owner, mintAllowance()));
 
         // ...then specified amount to whomever
-        assert(super.transfer(_to, _amount));
+        require(super.transfer(_to, _amount));
 
         return true;
     }
@@ -74,6 +74,6 @@ contract oobiqoo is BurnableToken, MintableToken {
     ///
     function () payable {
         // TODO?: check `allowedFunctionSignatures`, do delegatecall
-        throw;
+        revert();
     }
 }
