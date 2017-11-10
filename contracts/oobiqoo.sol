@@ -10,7 +10,7 @@ pragma experimental "v0.5.0";
  *
  * Author:  Noel Maersk (veox)
  * License: GPLv3
- * Sources: https://gitlab.com/veox/oobiqoo (TODO: Not yet available - stay tuned!..)
+ * Sources: https://gitlab.com/veox/oobiqoo
  * Compile: TODO
  */
 
