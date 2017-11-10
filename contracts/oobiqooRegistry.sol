@@ -1,5 +1,6 @@
 pragma solidity ~0.4.16;
-pragma experimental SMTChecker;
+//pragma experimental SMTChecker;
+pragma experimental "v0.5.0";
 
 /*
  * Who's who in oobiqoo?
@@ -11,11 +12,11 @@ pragma experimental SMTChecker;
  * Compile: TODO
  */
 
-import "./oobiqoo.solidity";
+import "./oobiqoo.sol";
 
 // FIXME: stub!
 contract oobiqooRegistry {
-    mapping public (address => address) registry;
+    mapping (address => address) public registry;
 
     ///
     function register() external returns(address) {
@@ -31,7 +32,7 @@ contract oobiqooRegistry {
     }
 
     ///
-    function () {
+    function () external {
         revert();
     }
 }

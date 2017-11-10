@@ -1,5 +1,8 @@
-pragma solidity ~0.4.16;
-pragma experimental SMTChecker;
+pragma solidity ~0.4.18;
+// needs `z3`, not installed on my system (yet), so disabled
+//pragma experimental SMTChecker;
+// required for .transfer() no-overload: https://github.com/ethereum/solidity/issues/2683
+pragma experimental "v0.5.0";
 
 /*
  * Live and die - a second every second.
@@ -11,68 +14,122 @@ pragma experimental SMTChecker;
  * Compile: TODO
  */
 
-// FIXME: OpenZeppelin uses contract inheritance instead of libraries
-// which hinders upgradability and call delegation.
-// Also, I don't like how they don't prefix events with `log`, don't
-// stylistically separate modifiers, function names, and variable names.
+import "./majoolr/TokenLib.sol";
 
-// FIXME: use ethpm for these zeppelins
-import 'BurnableToken.sol';
-import 'MintableToken.sol';
-
-/// @dev "Fake" since minimal, with the only signature that will be used.
-interface ERC20FakeInterface {
-    function transfer(address /* _to */, uint256 /* _amount */) returns (bool);
+/// @dev minimal, with the only signature that will be used.
+interface ERC20Interface {
+    function transfer(address /* _to */, uint256 /* _amount */) external returns (bool);
 }
 
-// FIXME: use libs instead of inheritance? (see "C3 linearization")
-contract oobiqoo is BurnableToken, MintableToken {
+contract oobiqoo {
+    using TokenLib for TokenLib.TokenStorage;
+
+    ///
+    TokenLib.TokenStorage token;
+    uint8 constant DECIMALS = 0;
+    uint256 constant INITIAL_SUPPLY = 1; // TODO: 0 when Majoolr fixes issue #41
+
     ///
     uint256 public lastMintInvocationTime;
 
-    ///
-    function mintAllowance() public view returns(uint256) {
-        int256 diff = now - lastMintInvocationTime;
-        require(diff >= 0);
-        return uint256(diff);
+    /// @dev constructor
+    function oobiqoo(address _owner) {
+        // TODO: custom deterministic name/symbol: perhaps 'oobiqoo.' + str(msg.sender)
+        token.init(_owner, "oobiqoo", "oobiqoo", DECIMALS, INITIAL_SUPPLY, true);
     }
 
-    /// @dev overridden: MintableToken.mint(address, uint256)
-    function mint(address _to, uint256 _amount) public onlyOwner canMint returns (bool) {
+    // UGLY: wrap-around TokenLib struct for ERC20 function signatures
+    // TODO?: inherit :( from Majoolr/ethereum-contracts StandardToken
+    function owner() constant returns (address) { return token.owner; }
+    function name() constant returns (string) { return token.name; }
+    function symbol() constant returns (string) { return token.symbol; }
+    function decimals() constant returns (uint8) { return token.decimals; }
+    function totalSupply() constant returns (uint256) { return token.totalSupply; }
+    function balanceOf(address who) constant returns (uint256) {
+        return token.balanceOf(who);
+    }
+    function allowance(address owner, address spender) constant returns (uint256) {
+        return token.allowance(owner, spender);
+    }
+    function transfer(address to, uint value) returns (bool ok) {
+        return token.transfer(to, value);
+    }
+    function transferFrom(address from, address to, uint value) returns (bool ok) {
+        return token.transferFrom(from, to, value);
+    }
+    function approve(address spender, uint value) returns (bool ok) {
+        return token.approve(spender, value);
+    }
+
+    // TODO: drop? already checked by TokenLib where necessary?
+    modifier only_owner { require(msg.sender == token.owner); _; }
+    modifier can_mint { require(token.stillMinting); _; }
+
+    ///
+    function mintAllowance()
+        public
+        view
+        returns(uint256)
+    {
+        // FIXME: use BasicMathLib
+        require(now >= lastMintInvocationTime);
+        return (now - lastMintInvocationTime);
+    }
+
+    ///
+    function mint(address _to, uint256 _amount)
+        public
+        only_owner
+        can_mint
+        returns (bool)
+    {
+        // get
+        uint256 max = mintAllowance();
+
         // check
-        require(mintAllowance() >= _amount);
+        require(max >= _amount);
 
         // mark
         lastMintInvocationTime = now;
 
         // transfer all to self...
-        assert(super.mint(owner, mintAllowance()));
+        assert(token.mintToken(max));
 
         // ...then specified amount to whomever
-        require(super.transfer(_to, _amount));
+        require(token.transfer(_to, _amount));
 
         return true;
     }
 
     /// @dev convenience: fall through with owner/full allowance
-    function mint() external onlyOwner canMint returns (bool) {
-        return mint(owner, mintAllowance());
+    function mint()
+        external
+        only_owner // TODO: remove (duplication)
+        can_mint // TODO: remove (duplication)
+        returns (bool)
+    {
+        // TODO: call token.mintToken(mintAllowance())
+        return mint(token.owner, mintAllowance());
     }
 
-    /// @dev forward "transfer" of a different token
-    function otherTransfer(address _otherTokenAddress, address _to, uint256 _amount) external onlyOwner returns (bool) {
-        // to transfer _this_ token, use regular `transfer()`
-        require(_otherTokenAddress != this.address);
+    /// @dev forward "transfer" call of a different token
+    function otherTransfer(address _otherTokenAddress, address _to, uint256 _amount)
+        external
+        only_owner
+        returns (bool)
+    {
+        // to transfer _this_ token, use regular `transfer()` instead
+        require(_otherTokenAddress != address(this));
 
         //
-        ERC20FakeInterface otherToken = ERC20FakeInterface(_otherTokenAddress);
+        ERC20Interface otherToken = ERC20Interface(_otherTokenAddress);
 
         // may throw, return true or false: up to "other" token
         return otherToken.transfer.gas(msg.gas)(_to, _amount);
     }
 
     ///
-    function () payable {
+    function () external {
         // TODO?: check `allowedFunctionSignatures`, do delegatecall
         revert();
     }
