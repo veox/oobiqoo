@@ -73,7 +73,7 @@ contract oobiqoo {
     }
 
     /// @dev mint full allowance to owner
-    function mint() external only_owner can_mint returns (bool) {
+    function mint() public only_owner can_mint returns (bool) {
         // mark
         lastMintInvocationTime = now;
 
@@ -90,17 +90,8 @@ contract oobiqoo {
         can_mint
         returns (bool)
     {
-        // get
-        uint256 max = mintAllowance();
-
-        // check
-        require(max >= _amount);
-
-        // mark
-        lastMintInvocationTime = now;
-
         // transfer all to self...
-        assert(token.mintToken(max));
+        require(mint());
 
         // ...then specified amount to whomever
         require(token.transfer(_to, _amount));
