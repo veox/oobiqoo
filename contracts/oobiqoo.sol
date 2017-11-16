@@ -30,6 +30,9 @@ contract oobiqoo {
     ///
     uint256 public lastMintInvocationTime;
 
+    // TODO: drop? already checked by TokenLib where necessary?
+    modifier only_owner { require(msg.sender == token.owner); _; }
+
     /// @dev constructor
     function oobiqoo(address __owner) {
         token.init({
@@ -62,9 +65,6 @@ contract oobiqoo {
     function approve(address spender, uint value) returns (bool ok) {
         return token.approve(spender, value);
     }
-
-    // TODO: drop? already checked by TokenLib where necessary?
-    modifier only_owner { require(msg.sender == token.owner); _; }
 
     ///
     function mintAllowance() public view returns (uint256) {
