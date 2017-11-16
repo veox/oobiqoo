@@ -7,7 +7,7 @@ pragma experimental "v0.5.0";
 /*
  * Live and die - a second every second.
  *
- * A single oobiqoo token. Allows minting one unit every second.
+ * A single oobiqoo ERC20 token. To be deployed on-request by oobiqooRegistry.
  *
  * Author:  Noel Maersk (veox)
  * License: GPLv3
@@ -17,7 +17,7 @@ pragma experimental "v0.5.0";
 
 import "./majoolr/TokenLib.sol";
 
-/// @dev minimal, with the only signature that will be used.
+/// @dev minimal, with the only signature that will be used
 interface ERC20Interface {
     function transfer(address /* _to */, uint256 /* _amount */) external returns (bool);
 }
@@ -30,13 +30,15 @@ contract oobiqoo {
     ///
     uint256 public lastMintInvocationTime;
 
-    uint8 constant DECIMALS = 0;
-    uint256 constant INITIAL_SUPPLY = 1; // TODO: 0 when Majoolr fixes issue #41
-
     /// @dev constructor
-    function oobiqoo(address _owner) {
-        // TODO: custom deterministic name/symbol: perhaps 'oobiqoo.' + str(msg.sender)
-        token.init(_owner, "oobiqoo", "oobiqoo", DECIMALS, INITIAL_SUPPLY, true);
+    function oobiqoo(address __owner) {
+        token.init({
+                    _owner: __owner,
+                    _name: "oobiqoo",   // TODO: custom deterministic name/symbol:
+                    _symbol: "oobiqoo", //       perhaps 'oobiqoo.' + str(msg.sender)
+                    _decimals: 0,
+                    _initial_supply: 1, // TODO: 0 when Majoolr fixes issue #41
+                    _allowMinting: true });
     }
 
     // UGLY: wrap-around TokenLib struct for ERC20 function signatures
@@ -84,7 +86,7 @@ contract oobiqoo {
 
     /// @dev convenience: mint and transfer in same call
     function mint(address _to, uint256 _amount)
-        public
+        external
         only_owner
         returns (bool)
     {
