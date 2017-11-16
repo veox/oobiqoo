@@ -66,11 +66,7 @@ contract oobiqoo {
     modifier can_mint { require(token.stillMinting); _; }
 
     ///
-    function mintAllowance()
-        public
-        view
-        returns(uint256)
-    {
+    function mintAllowance() public view returns(uint256) {
         // FIXME: use BasicMathLib
         require(now >= lastMintInvocationTime);
         return (now - lastMintInvocationTime);
@@ -101,15 +97,15 @@ contract oobiqoo {
         return true;
     }
 
-    /// @dev convenience: fall through with owner/full allowance
-    function mint()
-        external
-        only_owner // TODO: remove (duplication)
-        can_mint // TODO: remove (duplication)
-        returns (bool)
-    {
-        // TODO: call token.mintToken(mintAllowance())
-        return mint(token.owner, mintAllowance());
+    /// @dev convenience: mint full allowance to owner
+    function mint() external only_owner can_mint returns (bool) {
+        // mark
+        lastMintInvocationTime = now;
+
+        // transfer all to self
+        assert(token.mintToken(mintAllowance()));
+
+        return true;
     }
 
     /// @dev forward "transfer" call of a different token
