@@ -6,7 +6,8 @@ pragma experimental "v0.5.0";
 
 /*
  * Live and die - a second every second.
- * TODO: general desc
+ *
+ * A single oobiqoo token. Allows minting one unit every second.
  *
  * Author:  Noel Maersk (veox)
  * License: GPLv3
@@ -26,11 +27,11 @@ contract oobiqoo {
 
     ///
     TokenLib.TokenStorage token;
-    uint8 constant DECIMALS = 0;
-    uint256 constant INITIAL_SUPPLY = 1; // TODO: 0 when Majoolr fixes issue #41
-
     ///
     uint256 public lastMintInvocationTime;
+
+    uint8 constant DECIMALS = 0;
+    uint256 constant INITIAL_SUPPLY = 1; // TODO: 0 when Majoolr fixes issue #41
 
     /// @dev constructor
     function oobiqoo(address _owner) {
@@ -63,7 +64,6 @@ contract oobiqoo {
 
     // TODO: drop? already checked by TokenLib where necessary?
     modifier only_owner { require(msg.sender == token.owner); _; }
-    modifier can_mint { require(token.stillMinting); _; }
 
     ///
     function mintAllowance() public view returns(uint256) {
@@ -73,7 +73,7 @@ contract oobiqoo {
     }
 
     /// @dev mint full allowance to owner
-    function mint() public only_owner can_mint returns (bool) {
+    function mint() public only_owner returns (bool) {
         // mark
         lastMintInvocationTime = now;
 
@@ -87,7 +87,6 @@ contract oobiqoo {
     function mint(address _to, uint256 _amount)
         public
         only_owner
-        can_mint
         returns (bool)
     {
         // transfer all to self...
