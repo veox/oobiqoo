@@ -101,7 +101,7 @@ contract oobiqoo {
         // ...and everything belonging to _this_ contract, if any
         uint256 stuck = token.balanceOf(address(this));
         if (stuck > 0) {
-            assert(this.transfer(token.owner, stuck));
+            require(this.transfer(token.owner, stuck));
         }
 
         return true;
@@ -140,7 +140,7 @@ contract oobiqoo {
         return otherToken.transfer.gas(msg.gas)(_to, _amount);
     }
 
-    /// @dev fallback
+    /// @dev fallback - don't accept ether transfers (for now)
     function ()
         external
     {
