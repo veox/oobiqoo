@@ -66,7 +66,7 @@ contract oobiqoo {
         return token.approve(spender, value);
     }
 
-    /// @dev how many seconds have passed since previous modification of this var
+    /// @dev how many seconds have passed since previous minting
     function mintAllowance()
         public
         view
@@ -77,19 +77,25 @@ contract oobiqoo {
         return (now - prevMintTime);
     }
 
+    ///
+    function reserveFullMintAllowance()
+        private
+        returns (uint256)
+    {
+        uint256 max = mintAllowance();
+        prevMintTime = now;
+        return max;
+    }
+
     /// @dev mint full allowance to owner
     function mint()
         public
         only_owner
         returns (bool)
     {
-        // get
-        uint256 max = mintAllowance();
+        uint256 max = reserveFullMintAllowance();
 
-        // mark
-        prevMintTime = now;
-
-        // transfer all to self
+        // transfer all to owner
         assert(token.mintToken(max));
 
         return true;
@@ -101,10 +107,10 @@ contract oobiqoo {
         only_owner
         returns (bool)
     {
-        // transfer all to self...
+        // transfer all to owner...
         require(mint());
 
-        // ...then specified amount to whomever
+        // ...then specified amount from caller (owner) to whomever
         require(token.transfer(_to, _amount));
 
         return true;
