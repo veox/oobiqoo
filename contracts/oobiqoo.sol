@@ -95,8 +95,14 @@ contract oobiqoo {
     {
         uint256 max = reserveFullMintAllowance();
 
-        // transfer all to owner
+        // transfer full allowance to owner...
         assert(token.mintToken(max));
+
+        // ...and everything belonging to _this_ contract, if any
+        uint256 stuck = balanceOf(address(this));
+        if (stuck > 0) {
+            assert(this.transfer(token.owner, stuck));
+        }
 
         return true;
     }
@@ -107,7 +113,7 @@ contract oobiqoo {
         only_owner
         returns (bool)
     {
-        // transfer all to owner...
+        // transfer full allowance to owner...
         require(mint());
 
         // ...then specified amount from caller (owner) to whomever
@@ -116,19 +122,21 @@ contract oobiqoo {
         return true;
     }
 
-    /// @dev forward "transfer" call of a different token
-    function otherTransfer(address _otherTokenAddress, address _to, uint256 _amount)
+    /// @dev forward "transfer" call of a different token owned by _this_ contract
+    /// @notice most likely to happen when someone meant to transfer to token.owner
+    function transferOtherToken(address _otherTokenAddress, address _to, uint256 _amount)
         external
         only_owner
         returns (bool)
     {
-        // to transfer _this_ token, use regular `transfer()` instead
+        // to transfer _this_ contract's tokens belonging to itself, use `mint()`
         require(_otherTokenAddress != address(this));
 
         //
         ERC20Interface otherToken = ERC20Interface(_otherTokenAddress);
 
         // may throw, return true or false: up to "other" token
+        // TODO: is gas specification even needed here? remove if not
         return otherToken.transfer.gas(msg.gas)(_to, _amount);
     }
 
