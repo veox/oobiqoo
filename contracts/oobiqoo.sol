@@ -45,24 +45,24 @@ contract oobiqoo {
     }
 
     // UGLY: wrap-around TokenLib struct for ERC20 function signatures
-    function owner() constant returns (address) { return token.owner; }
-    function name() constant returns (string) { return token.name; }
-    function symbol() constant returns (string) { return token.symbol; }
-    function decimals() constant returns (uint8) { return token.decimals; }
-    function totalSupply() constant returns (uint256) { return token.totalSupply; }
-    function balanceOf(address who) constant returns (uint256) {
+    function owner() external view returns (address) { return token.owner; }
+    function name() external view returns (string) { return token.name; }
+    function symbol() external view returns (string) { return token.symbol; }
+    function decimals() external view returns (uint8) { return token.decimals; }
+    function totalSupply() external view returns (uint256) { return token.totalSupply; }
+    function balanceOf(address who) external view returns (uint256) {
         return token.balanceOf(who);
     }
-    function allowance(address owner, address spender) constant returns (uint256) {
+    function allowance(address owner, address spender) external view returns (uint256) {
         return token.allowance(owner, spender);
     }
-    function transfer(address to, uint value) returns (bool ok) {
+    function transfer(address to, uint value) external returns (bool ok) {
         return token.transfer(to, value);
     }
-    function transferFrom(address from, address to, uint value) returns (bool ok) {
+    function transferFrom(address from, address to, uint value) external returns (bool ok) {
         return token.transferFrom(from, to, value);
     }
-    function approve(address spender, uint value) returns (bool ok) {
+    function approve(address spender, uint value) external returns (bool ok) {
         return token.approve(spender, value);
     }
 
@@ -99,7 +99,7 @@ contract oobiqoo {
         assert(token.mintToken(max));
 
         // ...and everything belonging to _this_ contract, if any
-        uint256 stuck = balanceOf(address(this));
+        uint256 stuck = token.balanceOf(address(this));
         if (stuck > 0) {
             assert(this.transfer(token.owner, stuck));
         }
