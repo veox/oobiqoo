@@ -28,7 +28,7 @@ contract oobiqoo {
     ///
     TokenLib.TokenStorage token;
     ///
-    uint256 public lastMintInvocationTime;
+    uint256 public prevMintTime;
 
     // TODO: drop? already checked by TokenLib where necessary?
     modifier only_owner { require(msg.sender == token.owner); _; }
@@ -66,20 +66,31 @@ contract oobiqoo {
         return token.approve(spender, value);
     }
 
-    ///
-    function mintAllowance() public view returns (uint256) {
-        // FIXME: use BasicMathLib
-        require(now >= lastMintInvocationTime);
-        return (now - lastMintInvocationTime);
+    /// @dev how many seconds have passed since previous modification of this var
+    function mintAllowance()
+        public
+        view
+        returns (uint256)
+    {
+        // TODO: use BasicMathLib?
+        require(now >= prevMintTime);
+        return (now - prevMintTime);
     }
 
     /// @dev mint full allowance to owner
-    function mint() public only_owner returns (bool) {
+    function mint()
+        public
+        only_owner
+        returns (bool)
+    {
+        // get
+        uint256 max = mintAllowance();
+
         // mark
-        lastMintInvocationTime = now;
+        prevMintTime = now;
 
         // transfer all to self
-        assert(token.mintToken(mintAllowance()));
+        assert(token.mintToken(max));
 
         return true;
     }
@@ -115,8 +126,10 @@ contract oobiqoo {
         return otherToken.transfer.gas(msg.gas)(_to, _amount);
     }
 
-    ///
-    function () external {
+    /// @dev fallback
+    function ()
+        external
+    {
         // TODO?: check `allowedFunctionSignatures`, do delegatecall
         revert();
     }
