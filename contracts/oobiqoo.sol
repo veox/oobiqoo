@@ -72,7 +72,18 @@ contract oobiqoo {
         return (now - lastMintInvocationTime);
     }
 
-    ///
+    /// @dev mint full allowance to owner
+    function mint() external only_owner can_mint returns (bool) {
+        // mark
+        lastMintInvocationTime = now;
+
+        // transfer all to self
+        assert(token.mintToken(mintAllowance()));
+
+        return true;
+    }
+
+    /// @dev convenience: mint and transfer in same call
     function mint(address _to, uint256 _amount)
         public
         only_owner
@@ -93,17 +104,6 @@ contract oobiqoo {
 
         // ...then specified amount to whomever
         require(token.transfer(_to, _amount));
-
-        return true;
-    }
-
-    /// @dev convenience: mint full allowance to owner
-    function mint() external only_owner can_mint returns (bool) {
-        // mark
-        lastMintInvocationTime = now;
-
-        // transfer all to self
-        assert(token.mintToken(mintAllowance()));
 
         return true;
     }
