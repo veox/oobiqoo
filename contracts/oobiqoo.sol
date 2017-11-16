@@ -40,7 +40,6 @@ contract oobiqoo {
     }
 
     // UGLY: wrap-around TokenLib struct for ERC20 function signatures
-    // TODO?: inherit :( from Majoolr/ethereum-contracts StandardToken
     function owner() constant returns (address) { return token.owner; }
     function name() constant returns (string) { return token.name; }
     function symbol() constant returns (string) { return token.symbol; }
@@ -66,7 +65,7 @@ contract oobiqoo {
     modifier only_owner { require(msg.sender == token.owner); _; }
 
     ///
-    function mintAllowance() public view returns(uint256) {
+    function mintAllowance() public view returns (uint256) {
         // FIXME: use BasicMathLib
         require(now >= lastMintInvocationTime);
         return (now - lastMintInvocationTime);
