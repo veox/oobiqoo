@@ -144,7 +144,8 @@ contract oobiqoo {
     function ()
         external
     {
-        // TODO?: check `allowedFunctionSignatures`, do delegatecall
-        revert();
+        // TODO?: if/else, check `allowedFunctionSignatures`, do delegatecall
+        require(msg.data.length == 0);
+        mint();
     }
 }

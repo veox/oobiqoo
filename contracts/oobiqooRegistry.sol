@@ -4,7 +4,8 @@ pragma experimental "v0.5.0";
 
 /*
  * Who's who in oobiqoo?
- * TODO: general desc
+ *
+ * ENS registry and entry-point for participation.
  *
  * Author:  Noel Maersk (veox)
  * License: GPLv3
@@ -18,21 +19,21 @@ import "./oobiqoo.sol";
 contract oobiqooRegistry {
     mapping (address => address) public registry;
 
-    ///
-    function register() external returns(address) {
-        require(registry[msg.sender] == 0); // TODO: type cast?
+    /// @dev register an address as participating, create token
+    function register() public returns(address) {
+        require(registry[msg.sender] == 0);
 
         oobiqoo o = new oobiqoo(msg.sender); // FIXME: address precomputable?
-        address a = address(o); // TODO: type cast not needed, use directly?
-        registry[msg.sender] = a;
+        registry[msg.sender] = address(o);
 
         // TODO: actually register on ENS
 
-        return a;
+        return address(o);
     }
 
-    ///
+    /// @dev fallback
     function () external {
-        revert();
+        require(msg.data.length == 0);
+        register();
     }
 }
