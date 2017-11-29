@@ -40,7 +40,7 @@ contract oobiqoo {
                     _name: "oobiqoo",   // TODO: custom deterministic name/symbol:
                     _symbol: "oobiqoo", //       perhaps 'oobiqoo.' + str(msg.sender)
                     _decimals: 0,
-                    _initial_supply: 1, // TODO: 0 when Majoolr fixes issue #41
+                    _initial_supply: 0,
                     _allowMinting: true });
     }
 
