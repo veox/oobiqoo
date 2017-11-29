@@ -1,4 +1,4 @@
-# Brainstorm on token memory layout
+# Brainstorm on token storage layout
 
 Dump from Majoolr chat on Discord:
 
