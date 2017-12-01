@@ -90,6 +90,10 @@ In particular, the approach to keeping the allowances in the same contract:
       (add owner (keccak256 mem-keccak 0x20))))
 ```
 
+**NOTE** that this is not particularly safe: an account with 12 leading zeros - relatively easily attainable even with unoptimised JS-based `VanityEth` - is capable of writing values to balance storage locations when setting allowances, for many (intuitively 25%) possible values of `keccak256(spender_addr)`.
+
+This is exacerbated by the fact that setting an allowance does not reduce an `owner`'s balance. Effectively, finding just one suitable zero-front address is sufficient to overwrite balances for a large number of addresses, indefinitely.
+
 -----
 -----
 
