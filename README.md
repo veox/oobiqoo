@@ -1,9 +1,10 @@
 # oobiqoo
 
-An implementation of UBI on Ethereum, as a system of ERC20 tokens referenced
-from a central registry.
+An implementation of UBI on Ethereum, as a system of ERC20 tokens
+referenced from a registry.
 
-The tokens are "mintable", creating one smallest unit every second.
+The tokens are "mintable", allowing the creation of one indivisible
+unit every second.
 
 In early design stage.
 
