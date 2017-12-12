@@ -94,6 +94,8 @@ In particular, the approach to keeping the allowances in the same contract:
 
 This is exacerbated by the fact that setting an allowance does not reduce an `owner`'s balance. Effectively, finding just one suitable zero-front address is sufficient to overwrite balances for a large number of addresses, indefinitely.
 
+Submitted findings as [an issue](https://github.com/benjaminion/LLL_erc20/issues/1).
+
 -----
 -----
 
