@@ -90,11 +90,13 @@ In particular, the approach to keeping the allowances in the same contract:
       (add owner (keccak256 mem-keccak 0x20))))
 ```
 
-**NOTE** that this is not particularly safe: an account with 12 leading zeros - relatively easily attainable even with unoptimised JS-based `VanityEth` - is capable of writing values to balance storage locations when setting allowances, for many (intuitively 25%) possible values of `keccak256(spender_addr)`.
+**NOTE:** There is a possibility of storage location collision here. The initial assessment, submitted as [an issue](https://github.com/benjaminion/LLL_erc20/issues/1), had the probability of this happening off by 2^96.
 
-This is exacerbated by the fact that setting an allowance does not reduce an `owner`'s balance. Effectively, finding just one suitable zero-front address is sufficient to overwrite balances for a large number of addresses, indefinitely.
+Nevertheless, however unlikely, this can be eliminated completely by non-overlapping storage.
 
-Submitted findings as [an issue](https://github.com/benjaminion/LLL_erc20/issues/1).
+A systemic quirk for 1/2^X (where likely X>=64) of possible owner-spender pairs - i.e. the impossibility of formally correct behaviour for these; is pitted against an (at least) twice as higher probability to experience this by _any_ owner-spender pair, including the ones just "rescued", and a glimmer of hope for formal correctness.
+
+This trade-off is not a simple one, but I'm leaning towards the latter, out of personal distrust of edge cases.
 
 -----
 -----
