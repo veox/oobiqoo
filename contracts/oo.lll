@@ -6,7 +6,7 @@
 ;;;; @author Noel Maersk <veox>
 
 (seq
-  (import "common.lll")
+  (include "common.lll")
 
   ;;; =========================================================================
   ;;; ABI

@@ -9,6 +9,12 @@
   (def '*memloc-function-selector* 0x20)
 
   ;;; =========================================================================
+  ;;; STORAGE LAYOUT
+
+  (def '*storloc-owner*               0x00)
+  (def '*storloc-default-lib-address* 0x01)
+
+  ;;; =========================================================================
   ;;; CONSTANTS
 
   ;; booleans

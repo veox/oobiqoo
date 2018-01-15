@@ -5,7 +5,7 @@
 ;;;; @author Noel Maersk <veox>
 
 (seq
-  (import "common.lll")
+  (include "common.lll")
 
   ;;; =========================================================================
   ;;; ABI
@@ -17,6 +17,8 @@
   ;; oobiqoo
   (def '*claim-ens-name*      0x00000000) ; claimENSName()
   ;; dispatcher
+  ;; TODO: Does the registry need to be a library? I.e. can't it store
+  ;;       everything on ENS?
   (def '*init*                0x00000000) ; init()
   (def '*upgrade*             0x00000000) ; upgrade(???)
 
