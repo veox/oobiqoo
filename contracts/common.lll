@@ -38,15 +38,23 @@
   ;;; WEB3 ABI
 
   ;; --------------------------------------------------------------------------
+  ;; @author Daniel Ellison <zigguratt>
+  ;; @notice Retrieves the requested function ID from the first four bytes of
+  ;;         the call data.
+
+  (def 'calldata-function-selector
+       (shift-right (calldataload 0x00)))
+
+  ;; --------------------------------------------------------------------------
   ;; @author Ben Edgington <benjaminion>
   ;; @notice Gets the function ID and stores it in memory for reference.
-  ;; @dev The function ID is stored at a pre-defined location 0x20 and will
-  ;;      be read from memory every time instead of duplicated on stack.
-  ;; TODO: consider lll-docs lll_abi.html#passing-data-to-a-function
+  ;; @dev The function ID is stored at a pre-defined memory location and will
+  ;;      be read from there every time instead of accessing the call data.
+  ;; TODO: consider lll-docs -> lll_abi.html#passing-data-to-a-function
 
   (def 'mstore-function-selector
        (mstore *memloc-function-selector*
-               (shift-right (calldataload 0x00))))
+               calldata-function-selector))
 
   ;; --------------------------------------------------------------------------
   ;; @author Daniel Ellison <zigguratt>

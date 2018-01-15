@@ -17,68 +17,44 @@
   ;;; =========================================================================
   ;;; INIT
 
-  (sstore *storloc-owner* (caller))
-  (sstore *storloc-default-lib-address* 0x00)
+  ;; minimal storage initialisation
+  (sstore *storloc-owner* (caller)) ; TODO: do in oo.init()?
+  (sstore *storloc-default-lib-address* todo-get-stable-oo-address-from-ens)
+  ;; delegated call to oo.init()
+  (mstore *memloc-call-data* (pad-right *init*))
+  (delegatecall (- (gas) 1000)
+                (sload *storloc-default-lib-address*)
+                *memloc-call-data* 4
+                *memloc-return-data* 0)
 
   ;;; =========================================================================
   ;;; RUNTIME
 
   (returnlll
    (seq
-     unpayable
-     mstore-function-selector
+     unpayable ; TODO: remove and allow ether transfers?
 
-     ;; -----------------------------------------------------------------------
-     ;; Initialize the dispatcher with the contract at the address provided.
-     ;; This function is similar to a constructor except it has to be called
-     ;; manually with LLL.
-     ;;
-     ;; Signature: Dispatcher(address)
-     ;; Returns: nothing
-
-     (function *dispatcher*
-               (seq
-                 only-owner
-                 already-initialized
-                 no-contract-address
-
-                 ;; Set contract address and enable it.
-                 (sstore *storloc-default-lib-address* (calldataload 4))
-                 (sstore @@*storloc-default-lib-address* true)
-
-                 ;; Call the contract's initialize() function.
-                 (mstore call-data (pad-right initialize))
-                 (delegatecall (- (gas) 1000) @@contract-address
-                               call-data 32 return-data 0)
-
-                 ;; Stop here; nothing to return.
-                 (stop)))
-
-     ;; -----------------------------------------------------------------------
-     ;; Guard against no contract address having been set.
-
+     ;; guard against no contract lib address having been set
      (when (= (sload *storloc-default-lib-address*) 0x00) (panic))
 
-     ;; -----------------------------------------------------------------------
-     ;; First, store the short hash of the function to be called (for use by
-     ;; the 'return-size' macro). Then copy all calldata to a known location.
-     ;; Finally, call the contract at @@*storloc-default-lib-address* providing
-     ;; the function call return length.
-
-     (mstore *memloc-short-hash* function-id)
-     (calldatacopy call-data 0x00 (calldatasize))
+     ;; save function selector for use by todo-macro-return-size
+     (mstore-function-selector)
+     ;; copy all call data to memory
+     (calldatacopy *memloc-call-data* 0x00 (calldatasize))
+     ;; delegatecall while saving the result
      (mstore *memloc-return-code*
-             (delegatecall (- (gas) 1000) (sload *storloc-default-lib-address*)
-                           call-data (calldatasize) return-data return-size))
+             (delegatecall (- (gas) 1000) ; TODO: justify magicnum 1000
+                           (sload *storloc-default-lib-address*)
+                           *memloc-call-data* (calldatasize)
+                           *memloc-return-data* return-size))
 
-     ;; -----------------------------------------------------------------------
+
      ;; If the call was successful, relay the data returned from the call,
      ;; making sure we include the right length of data. If there's no return
-     ;; data, just end contract execution. If delegatecall failed, we
-     ;; propagate the EVM exception up.
-
+     ;; data, just end contract execution. If delegatecall failed, propagate
+     ;; the EVM exception up.
      (if (= (mload *memloc-return-code*) true)
          (if (!= return-size 0)
-             (return return-data return-size)
+             (return *memloc-return-data* todo-macro-return-size)
              (stop))
          (panic)))))
