@@ -1,7 +1,8 @@
 ;;;; ==========================================================================
 ;;;; @title oobiqoo
 ;;;; @notice Registry library.
-;;;; @dev Implements an ENS registry for both library and token contracts.
+;;;; @dev Implements an ENS registry for both token-lib and per-user
+;;;;      dispatcher contracts.
 ;;;; @author Noel Maersk <veox>
 
 (seq
