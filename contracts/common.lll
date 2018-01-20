@@ -11,6 +11,7 @@
   ;;; =========================================================================
   ;;; STORAGE LAYOUT
 
+  ;; FIXME: quick-and-dirty for now; must decide on layout specifics
   (def '*storloc-owner*               0x00)
   (def '*storloc-default-lib-address* 0x01)
 
@@ -39,17 +40,17 @@
 
   ;; --------------------------------------------------------------------------
   ;; @author Daniel Ellison <zigguratt>
-  ;; @notice Retrieves the requested function ID from the first four bytes of
-  ;;         the call data.
+  ;; @notice Retrieves the requested function selector from the first four
+  ;;         bytes of the call data.
 
   (def 'calldata-function-selector
        (shift-right (calldataload 0x00)))
 
   ;; --------------------------------------------------------------------------
   ;; @author Ben Edgington <benjaminion>
-  ;; @notice Gets the function ID and stores it in memory for reference.
-  ;; @dev The function ID is stored at a pre-defined memory location and will
-  ;;      be read from there every time instead of accessing the call data.
+  ;; @notice Gets the function selector and stores it in memory for reference.
+  ;; @dev The function selector is stored at a pre-defined memory location and
+  ;;      can be read from there every time instead of accessing the call data.
   ;; TODO: consider lll-docs -> lll_abi.html#passing-data-to-a-function
 
   (def 'mstore-function-selector
@@ -62,12 +63,19 @@
   ;;         one and executes <code-body> if so.
   ;; @dev The selector is in the leftmost four bytes of the call data:
   ;;      https://github.com/ethereum/wiki/wiki/Ethereum-Contract-ABI
-  ;; @param function-hash The four-byte hash of a known function signature.
+  ;; @param function-selector The four-byte hash of a known function signature.
   ;; @param code-body The code to run in the case of a match.
 
   (def 'function (function-selector code-body)
        (when (= (mload *memloc-function-selector*) function-selector)
          code-body))
+
+  ;; --------------------------------------------------------------------------
+  ;; @author Noel Maersk <veox>, Daniel Ellison <zigguratt>
+  ;; @notice Retrieves data return size for a given (in-mem) function selector.
+
+  (def 'return-size
+       (sload (TODO-NOT-IMPLEMENTED *memloc-function-selector*)))
 
   ;; --------------------------------------------------------------------------
   ;; @author Daniel Ellison <zigguratt>

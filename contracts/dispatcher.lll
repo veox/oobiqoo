@@ -38,7 +38,7 @@
      ;; guard against no contract lib address having been set
      (when (= (sload *storloc-default-lib-address*) 0x00) (revert 0 0))
 
-     ;; save function selector for use by todo-macro-return-size
+     ;; save function selector for use by macro return-size
      (mstore-function-selector)
      ;; copy all call data to memory
      (calldatacopy *memloc-call-data* 0x00 (calldatasize))
@@ -47,7 +47,7 @@
              (delegatecall (- (gas) 1000) ; TODO: justify magicnum 1000
                            (sload *storloc-default-lib-address*)
                            *memloc-call-data* (calldatasize)
-                           *memloc-return-data* todo-macro-return-size))
+                           *memloc-return-data* return-size))
 
 
      ;; If the call was successful, relay the data returned from the call,
@@ -56,6 +56,6 @@
      ;; the EVM exception up.
      (if (= (mload *memloc-return-code*) true)
          (if (!= return-size 0)
-             (return *memloc-return-data* todo-macro-return-size)
+             (return *memloc-return-data* return-size)
              (stop))
          (revert 0 0)))))
