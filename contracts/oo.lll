@@ -96,4 +96,4 @@
                  ())
 
        ;; fallback
-       (panic))))
+       (revert 0 0))))

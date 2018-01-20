@@ -20,6 +20,7 @@
   ;; minimal storage initialisation
   (sstore *storloc-owner* (caller)) ; TODO: do in oo.init()?
   (sstore *storloc-default-lib-address* todo-get-stable-oo-address-from-ens)
+
   ;; delegated call to oo.init()
   (mstore *memloc-call-data* (pad-right *init*))
   (delegatecall (- (gas) 1000)
@@ -35,7 +36,7 @@
      unpayable ; TODO: remove and allow ether transfers?
 
      ;; guard against no contract lib address having been set
-     (when (= (sload *storloc-default-lib-address*) 0x00) (panic))
+     (when (= (sload *storloc-default-lib-address*) 0x00) (revert 0 0))
 
      ;; save function selector for use by todo-macro-return-size
      (mstore-function-selector)
@@ -46,7 +47,7 @@
              (delegatecall (- (gas) 1000) ; TODO: justify magicnum 1000
                            (sload *storloc-default-lib-address*)
                            *memloc-call-data* (calldatasize)
-                           *memloc-return-data* return-size))
+                           *memloc-return-data* todo-macro-return-size))
 
 
      ;; If the call was successful, relay the data returned from the call,
@@ -57,4 +58,4 @@
          (if (!= return-size 0)
              (return *memloc-return-data* todo-macro-return-size)
              (stop))
-         (panic)))))
+         (revert 0 0)))))

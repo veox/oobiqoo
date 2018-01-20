@@ -71,7 +71,7 @@
 
   ;; --------------------------------------------------------------------------
   ;; @author Daniel Ellison <zigguratt>
-  ;; @notice Modifier macro to prevent unintended payments.
+  ;; @notice Forbid ether transfers.
 
   (def 'unpayable
-       (when (callvalue) (panic))))
+       (when (callvalue) (revert 0 0))))
