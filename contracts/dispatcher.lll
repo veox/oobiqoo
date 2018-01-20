@@ -10,21 +10,19 @@
   ;;; =========================================================================
   ;;; ABI
 
-  (def '*dispatcher* 0x00000000) ; Dispatcher(address)
-
-  ;; Otherwise pure pass-through to oo.lll - see there!
+  ;; Pure pass-through to oo.lll - see you there!
 
   ;;; =========================================================================
   ;;; INIT
 
   ;; minimal storage initialisation
   (sstore *storloc-owner* (caller)) ; TODO: do in oo.init()?
-  (sstore *storloc-default-lib-address* todo-get-stable-oo-address-from-ens)
+  (sstore *storloc-base-implementing-lib* TODO-get-stable-oo-address-from-ens)
 
   ;; delegated call to oo.init()
   (mstore *memloc-call-data* (pad-right *init*))
-  (delegatecall (- (gas) 1000)
-                (sload *storloc-default-lib-address*)
+  (delegatecall (- (gas) 1000) ; TODO: justify magicnum 1000
+                (sload *storloc-base-implementing-lib*)
                 *memloc-call-data* 4
                 *memloc-return-data* 0)
 
@@ -36,26 +34,29 @@
      unpayable ; TODO: remove and allow ether transfers?
 
      ;; guard against no contract lib address having been set
-     (when (= (sload *storloc-default-lib-address*) 0x00) (revert 0 0))
+     (when (= (sload *storloc-base-implementing-lib*) 0x00) (revert 0 0))
 
      ;; save function selector for use by macro return-size
      (mstore-function-selector)
      ;; copy all call data to memory
      (calldatacopy *memloc-call-data* 0x00 (calldatasize))
-     ;; delegatecall while saving the result
-     (mstore *memloc-return-code*
-             (delegatecall (- (gas) 1000) ; TODO: justify magicnum 1000
-                           (sload *storloc-default-lib-address*)
-                           *memloc-call-data* (calldatasize)
-                           *memloc-return-data* return-size))
 
+     ;; delegatecall, always to base lib; revert if unsuccessful
+     (when (= false
+              (delegatecall (- (gas) 1000) ; TODO: justify magicnum 1000
+                            (sload *storloc-base-implementing-lib*)
+                            *memloc-call-data*
+                            (calldatasize)
+                            *memloc-return-data*
+                            (return-size (mload *memloc-function-selector*))))
+       (revert 0 0))
 
-     ;; If the call was successful, relay the data returned from the call,
-     ;; making sure we include the right length of data. If there's no return
-     ;; data, just end contract execution. If delegatecall failed, propagate
-     ;; the EVM exception up.
-     (if (= (mload *memloc-return-code*) true)
-         (if (!= return-size 0)
-             (return *memloc-return-data* return-size)
-             (stop))
-         (revert 0 0)))))
+       ;; how much was this function supposed to return?
+     (mstore *memloc-scratchpad*
+             (return-size (mload *memloc-function-selector*)))
+
+     (if (!= (mload *memloc-scratchpad*) 0)
+         ;; ...relay the returned data (if there was any)...
+         (return *memloc-return-data* (mload *memloc-scratchpad*))
+         ;; ...or just stop (if there wasn't);...
+         (stop)))))
