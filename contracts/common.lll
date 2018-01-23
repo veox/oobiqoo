@@ -19,10 +19,6 @@
   (def '*storloc-base-balances*
        0x0000000000000000000000000000000000000000000000000000000000000000)
 
-  ;; TODO: consider packing allowance itself and its expiry into same storage
-  ;;       slot: a balance racked up in a thousand years is about 31.5 billion,
-  ;;       which still fits in 35 bits; so perhaps no need to waste space
-
   ;; allowances: other to other (hash-packed)
   ;; 0x 0100.... ........ ........ ........ ........ ........ ........ ........
   (def '*storloc-base-allowances*

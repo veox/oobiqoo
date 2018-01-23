@@ -30,6 +30,7 @@
   (def '*approve-timed*       0x00000000) ; approveTimed(address,uint256,uint256)
   (def '*set-def-approve-for* 0x00000000) ; setDefaultApprovalDuration(uint256)
   (def '*transfer-other*      0x00000000) ; transferOther(address,address,uint256)
+  (def '*burn*                0x00000000) ; burn(uint256)
   ;; oobiqoo
   (def '*claim-ens-name*      0x00000000) ; claimENSName()
   ;; dispatcher
@@ -66,6 +67,8 @@
        (function *set-def-approve-for*
                  ())
        (function *transfer-other*
+                 ())
+       (function *burn*
                  ())
 
        (function *upgrade*
