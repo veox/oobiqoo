@@ -19,8 +19,9 @@
   (sstore *storloc-owner* (caller)) ; TODO: do in oo.init()?
   (sstore *storloc-base-implementing-lib* TODO-get-stable-oo-address-from-ens)
 
+  ;; store selector, making sure it's left-aligned in the memory slot
+  (mstore *memloc-call-data* (shift-left *init* 224))
   ;; delegated call to oo.init()
-  (mstore *memloc-call-data* (pad-right *init*))
   (delegatecall (- (gas) 1000) ; TODO: justify magicnum 1000
                 (sload *storloc-base-implementing-lib*)
                 *memloc-call-data* 4
