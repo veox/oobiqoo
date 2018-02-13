@@ -5,7 +5,7 @@
 ;;;; @author Daniel Ellison <zigguratt>, Noel Maersk <veox>
 
 (seq
-  (include "common.lll")
+  (include "common.lll.inc")
 
   ;;; =========================================================================
   ;;; ABI
