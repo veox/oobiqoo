@@ -17,42 +17,42 @@
   (def '*storloc-symbol*              0x00)
   (def '*storloc-decimals*            0x00)
   (def '*storloc-total-supply*        0x00)
-  (def '*storloc-default-expires*     604800) ; one week
+  (def '*storloc-def-approval-dur*    604800) ; one week
 
   ;; token balances
   ;; 0x 00000000 00000000 00000000 ........ ........ ........ ........ ........
-  (def '*storloc-base-balance*
+  (def '*storbase-balance*
        0x0000000000000000000000000000000000000000000000000000000000000000)
 
   ;; allowances: other to other (hash-packed)
   ;; 0x 0100.... ........ ........ ........ ........ ........ ........ ........
-  (def '*storloc-base-allowance*
+  (def '*storbase-allowance*
        0x0100000000000000000000000000000000000000000000000000000000000000)
   ;; 0x 0200.... ........ ........ ........ ........ ........ ........ ........
-  (def '*storloc-base-allowance-expires*
+  (def '*storbase-allowance-expires*
        0x0200000000000000000000000000000000000000000000000000000000000000)
   ;; allowances: from this very token's owner
   ;; 0x 01010000 00000000 00000000 ........ ........ ........ ........ ........
-  (def '*storloc-base-allowance-from-this*
+  (def '*storbase-allowance-from-this*
        0x0101000000000000000000000000000000000000000000000000000000000000)
   ;; 0x 02010000 00000000 00000000 ........ ........ ........ ........ ........
-  (def '*storloc-base-allowance-from-this-expires*
+  (def '*storbase-allowance-from-this-expires*
        0x0201000000000000000000000000000000000000000000000000000000000000)
   ;; allowances: to this very token's owner
   ;; 0x 01020000 00000000 00000000 ........ ........ ........ ........ ........
-  (def '*storloc-base-allowance-to-this*
+  (def '*storbase-allowance-to-this*
        0x0102000000000000000000000000000000000000000000000000000000000000)
   ;; 0x 02020000 00000000 00000000 ........ ........ ........ ........ ........
-  (def '*storloc-base-allowance-to-this-expires*
+  (def '*storbase-allowance-to-this-expires*
        0x0202000000000000000000000000000000000000000000000000000000000000)
 
   ;; which library implements this function?
   ;; 0x ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff 00000000 ........
-  (def '*storloc-base-implementing-lib*
+  (def '*storbase-implementing-lib*
        0xffffffffffffffffffffffffffffffffffffffffffffffff0000000000000000)
   ;; what is the size of data this function returns?
   ;; 0x ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff 10000000 ........
-  (def '*storloc-base-return-size*
+  (def '*storbase-return-size*
        0xffffffffffffffffffffffffffffffffffffffffffffffff1000000000000000)
 
   ;;; =========================================================================
