@@ -43,7 +43,7 @@
      (calldatacopy *memloc-call-data* 0x00 (calldatasize))
 
      ;; delegatecall, always to base lib; revert if unsuccessful
-     (when (= false
+     (when (= *false*
               (delegatecall (- (gas) 1000) ; TODO: justify magicnum 1000
                             (sload *storloc-base-implementing-lib*)
                             *memloc-call-data*
