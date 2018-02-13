@@ -1,0 +1,102 @@
+;;;; ==========================================================================
+;;;; @title oo
+;;;; @notice Base token library.
+;;;; @dev Implements an ERC20-compatible token with oobiqoo extensions as a
+;;;;      library delegated-to via a dispatcher.
+;;;; @author Noel Maersk <veox>
+
+(seq
+  (include "common.lll")
+
+  ;;; =========================================================================
+  ;;; ABI
+
+  ;; ERC20
+  (def '*get-name*            0x06fdde03) ; name()
+  (def '*get-symbol*          0x95d89b41) ; symbol()
+  (def '*get-decimals*        0x313ce567) ; decimals()
+  (def '*get-total-supply*    0x18160ddd) ; totalSupply()
+  (def '*get-balance-of*      0x70a08231) ; balanceOf(address)
+  (def '*transfer*            0xa9059cbb) ; transfer(address,uint256)
+  (def '*transfer-from*       0x23b872dd) ; transferFrom(address,address,uint256)
+  (def '*approve*             0x095ea7b3) ; approve(address,uint256)
+  (def '*get-allowance*       0xdd62ed3e) ; allowance(address,address)
+  ;; ERC165
+  (def '*supports-interface*  0x01ffc9a7) ; supportsInterface(bytes4)
+  ;; oo
+  (def '*get-mint-allowance*  0x00000000) ; mintAllowance()
+  (def '*mint*                0x00000000) ; mint()
+  (def '*mint-and-transfer*   0x00000000) ; mintAndTransfer(address,uint256)
+  (def '*approve-timed*       0x00000000) ; approveTimed(address,uint256,uint256)
+  (def '*set-def-approve-for* 0x00000000) ; setDefaultApprovalDuration(uint256)
+  (def '*transfer-other*      0x00000000) ; transferOther(address,address,uint256)
+  (def '*burn*                0x00000000) ; burn(uint256)
+  ;; oobiqoo
+  (def '*claim-ens-name*      0x00000000) ; claimENSName()
+  ;; dispatcher
+  (def '*init*                0x00000000) ; init()
+  (def '*upgrade*             0x00000000) ; upgrade(???)
+
+  ;;; =========================================================================
+  ;;; INIT
+
+  (seq
+    unpayable
+
+  ;;; =========================================================================
+  ;;; RUNTIME
+
+    (returnlll
+     (seq
+       unpayable
+       mstore-function-selector
+
+       (function *transfer*
+                 ())
+       (function *approve*
+                 ())
+       (function *transfer-from*
+                 ())
+
+       (function *mint*
+                 ())
+       (function *mint-and-transfer*
+                 ())
+       (function *approve-timed*
+                 ())
+       (function *set-def-approve-for*
+                 ())
+       (function *transfer-other*
+                 ())
+       (function *burn*
+                 ())
+
+       (function *upgrade*
+                 ())
+       (function *init*
+                 ())
+
+       (function *claim-ens-name*
+                 ())
+
+       (function *get-name*
+                 ())
+       (function *get-symbol*
+                 ())
+       (function *get-decimals*
+                 ())
+       (function *get-total-supply*
+                 ())
+       (function *get-balance-of*
+                 ())
+       (function *get-allowance*
+                 ())
+
+       (function *supports-interface*
+                 ())
+
+       (function *get-mint-allowance*
+                 ())
+
+       ;; fallback
+       (revert 0 0))))
