@@ -74,9 +74,11 @@
   ;;      0x0000000000000000000000000000000000000000000000000000000014ab9038
   ;; @param input A 32-byte number.
 
+  ;; TODO: same as lllc-provided `shr`?..
   (def 'shift-right (input nbits)
        (div input (exp 2 nbits)))
 
+  ;; TODO: same as lllc-provided `shl`?..
   (def 'shift-left (input nbits)
        (mul input (exp 2 nbits)))
 
