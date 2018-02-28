@@ -1,5 +1,5 @@
 ;;;; ==========================================================================
-;;;; @title dispatcher
+;;;; @title Dispatcher to token library.
 ;;;; @notice Storage doesn't move.
 ;;;; @dev Delegates calls to a compatible contract.
 ;;;; @author Daniel Ellison <zigguratt>, Noel Maersk <veox>
