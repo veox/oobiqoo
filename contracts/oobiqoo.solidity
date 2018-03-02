@@ -1,6 +1,6 @@
 pragma solidity ~0.4.20;
 
-interface oobiqoo {
+contract oobiqoo {
     // ERC165
     function supportsInterface(bytes4 _interfaceID) public view returns(bool _yes);
 
@@ -16,5 +16,5 @@ interface oobiqoo {
     // dispatcher
     function init() external returns(bool success);
     function upgrade() external returns(bool success);
-    event upgraded(address old, address new);
+    event upgraded(address oldimpl, address newimpl);
 }

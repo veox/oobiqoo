@@ -1,19 +1,19 @@
 pragma solidity ~0.4.20;
 
-interface oo {
+contract oo {
     // ERC165
     function supportsInterface(bytes4 _interfaceID) public view returns(bool _yes);
 
     // ERC20
-    function name() public view returns(string name);
-    function symbol() public view returns (string symbol);
-    function decimals() public view returns (uint8 decimals);
-    function totalSupply() public view returns (uint256 amount);
-    function balanceOf(address owner) public view returns (uint256 balance);
-    function transfer(address to, uint256 amount) returns (bool success);
-    function transferFrom(address from, address to, uint256 amount) returns (bool success);
-    function approve(address spender, uint256 amount) returns (bool success);
-    function allowance(address owner, address spender) public view returns (uint256 remaining);
+    function name() public view returns(string _name);
+    function symbol() public view returns(string _symbol);
+    function decimals() public view returns(uint8 _decimals);
+    function totalSupply() public view returns(uint256 amount);
+    function balanceOf(address owner) public view returns(uint256 balance);
+    function transfer(address to, uint256 amount) public returns(bool success);
+    function transferFrom(address from, address to, uint256 amount) public returns(bool success);
+    function approve(address spender, uint256 amount) public returns(bool success);
+    function allowance(address owner, address spender) public view returns(uint256 remaining);
     event Transfer(address indexed from, address indexed to, uint256 amount);
     event Approval(address indexed owner, address indexed spender, uint256 amount);
 
@@ -36,5 +36,5 @@ interface oo {
     // dispatcher
     function init() external returns(bool success);
     function upgrade() external returns(bool success);
-    event upgraded(address old, address new);
+    event upgraded(address oldimpl, address newimpl);
 }
