@@ -1,0 +1,17 @@
+pragma solidity ~0.4.20;
+
+interface oollloo {
+    // ERC165
+    function supportsInterface(bytes4 _interfaceID) public view returns(bool _yes);
+
+    // ENS
+    // TODO: does anything need to be here?..
+
+    // oollloo
+    function deploy(bytes bytecode) public returns(address to);
+
+    // dispatcher
+    function init() external returns(bool success);
+    function upgrade() external returns(bool success);
+    event upgraded(address old, address new);
+}

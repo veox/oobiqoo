@@ -1,0 +1,20 @@
+pragma solidity ~0.4.20;
+
+interface oobiqoo {
+    // ERC165
+    function supportsInterface(bytes4 _interfaceID) public view returns(bool _yes);
+
+    // ENS
+    // TODO: does anything need to be here?..
+
+    // oobiqoo
+    function firtbytes() public view returns(string firstbytes);
+    function claim_ENS_name() public returns(string firstbytes);
+    function oo_of(address owner) public view returns(address oo);
+    function owner_of(address oo) public view returns(address owner);
+
+    // dispatcher
+    function init() external returns(bool success);
+    function upgrade() external returns(bool success);
+    event upgraded(address old, address new);
+}
