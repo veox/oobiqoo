@@ -1,0 +1,40 @@
+pragma solidity ~0.4.20;
+
+interface oo {
+    // ERC165
+    function supportsInterface(bytes4 _interfaceID) public view returns(bool _yes);
+
+    // ERC20
+    function name() public view returns(string name);
+    function symbol() public view returns (string symbol);
+    function decimals() public view returns (uint8 decimals);
+    function totalSupply() public view returns (uint256 amount);
+    function balanceOf(address owner) public view returns (uint256 balance);
+    function transfer(address to, uint256 amount) returns (bool success);
+    function transferFrom(address from, address to, uint256 amount) returns (bool success);
+    function approve(address spender, uint256 amount) returns (bool success);
+    function allowance(address owner, address spender) public view returns (uint256 remaining);
+    event Transfer(address indexed from, address indexed to, uint256 amount);
+    event Approval(address indexed owner, address indexed spender, uint256 amount);
+
+    // oo
+    function get_mint_allowance() public view returns(uint256 mintable);
+    function mint() public returns(uint256 minted);
+    function mint(uint256 amount) public returns(uint256 minted);
+    function mint_and_transfer(address to, uint256 amount) public returns(uint256 minted);
+    function approve_timed(address spender, uint256 amount, uint256 duration) public returns(bool success);
+    function set_default_approval_duration(uint256 duration) public returns(bool success);
+    function transfer_other(address token, address to, uint256 amount) public returns(bool success);
+    function burn(uint56 amount) public returns(uint256 burned);
+    event default_approval_duration_set(uint256 duration);
+    event burned(address indexed burner, uint256 amount);
+    event minted(uint256 amount);
+
+    // oobiqoo
+    function claim_ENS_name() public returns(string firstbytes);
+
+    // dispatcher
+    function init() external returns(bool success);
+    function upgrade() external returns(bool success);
+    event upgraded(address old, address new);
+}
