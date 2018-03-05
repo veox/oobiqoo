@@ -11,14 +11,6 @@
   ;;; =========================================================================
   ;;; STORAGE LAYOUT
 
-  ;; FIXME: put these somewhere :/
-  (def '*storloc-owner*               0x00)
-  (def '*storloc-name*                0x00)
-  (def '*storloc-symbol*              0x00)
-  (def '*storloc-decimals*            0x00)
-  (def '*storloc-total-supply*        0x00)
-  (def '*storloc-def-approval-dur*    604800) ; one week
-
   ;; token balances
   ;; 0x 00000000 00000000 00000000 ........ ........ ........ ........ ........
   (def '*storbase-balance*
@@ -31,6 +23,7 @@
   ;; 0x 0200.... ........ ........ ........ ........ ........ ........ ........
   (def '*storbase-allowance-expires*
        0x0200000000000000000000000000000000000000000000000000000000000000)
+
   ;; allowances: from this very token's owner
   ;; 0x 01010000 00000000 00000000 ........ ........ ........ ........ ........
   (def '*storbase-allowance-from-this*
@@ -38,6 +31,7 @@
   ;; 0x 02010000 00000000 00000000 ........ ........ ........ ........ ........
   (def '*storbase-allowance-from-this-expires*
        0x0201000000000000000000000000000000000000000000000000000000000000)
+
   ;; allowances: to this very token's owner
   ;; 0x 01020000 00000000 00000000 ........ ........ ........ ........ ........
   (def '*storbase-allowance-to-this*
@@ -47,13 +41,24 @@
        0x0202000000000000000000000000000000000000000000000000000000000000)
 
   ;; which library implements this function?
-  ;; 0x ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff 00000000 ........
+  ;; 0x ffffffff ffffffff ffffffff ffffffff 00000000 00000000 00000000 ........
   (def '*storbase-implementing-lib*
-       0xffffffffffffffffffffffffffffffffffffffffffffffff0000000000000000)
+       0xffffffffffffffffffffffffffffffff00000000000000000000000000000000)
   ;; what is the size of data this function returns?
-  ;; 0x ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff 10000000 ........
+  ;; 0x ffffffff ffffffff ffffffff ffffffff 00000000 00000001 00000000 ........
   (def '*storbase-return-size*
-       0xffffffffffffffffffffffffffffffffffffffffffffffff1000000000000000)
+       0xffffffffffffffffffffffffffffffff00000000000000010000000000000000)
+
+  ;; configuration fields
+  ;; 0x ffffffff ffffffff ffffffff ffffffff 00000001 00000000 00000000 ........
+  (def '*storbase-config*
+       0xffffffffffffffffffffffffffffffff00000001000000000000000000000000)
+  (def '*storloc-owner*           (+ *storbase-config* 0x00))
+  (def '*storloc-name*            (+ *storbase-config* 0x01))
+  (def '*storloc-symbol*          (+ *storbase-config* 0x02))
+  (def '*storloc-decimals*        (+ *storbase-config* 0x03))
+  (def '*storloc-total-supply*    (+ *storbase-config* 0x04))
+  (def '*storloc-def-approve-dur* (+ *storbase-config* 0x05))
 
   ;;; =========================================================================
   ;;; CONSTANTS
