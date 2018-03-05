@@ -1,14 +1,30 @@
 # oobiqoo
 
-An implementation of UBI on Ethereum, as a system of ERC20 tokens
-referenced from a registry.
+A Universal Basic Income scheme built on Ethereum, as a system of ERC20
+tokens referenced from a registry.
 
 The tokens are "mintable", allowing the creation of one indivisible
 unit every second.
 
-In early design stage.
+In early implementation stage.
 
-License: AGPLv3. See [`LICENSE.txt`](LICENSE.txt).
+
+## Development
+
+[Populus](https://github.com/ethereum/populus/) is used for development.
+Although `requirements.txt` specifies `populus==2.1.0`, the actual version
+required is the one in [my `populus/lll-to-merge`
+branch](https://github.com/veox/populus/tree/lll-to-merge), at least until
+[`ethereum/populus` PR 408](https://github.com/ethereum/populus/pull/408)
+is merged.
+
+
+## License
+
+If not stated otherwise, everything in this repository is licensed under the
+GNU Affero General Public License - specifically, AGPLv3.
+
+See [`LICENSE.txt`](LICENSE.txt).
 
 
 ## See also
