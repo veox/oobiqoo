@@ -34,9 +34,12 @@ See [`LICENSE.txt`](LICENSE.txt).
   by said dispatcher, from [this wonderful series of articles][resurrection] by
   Daniel Ellison.
 * An implementation of an [ERC20 token in LLL][erc20-lll], by Ben Edgington.
+* [LLL creation patterns][lll-creation], detailing approaches to the Factory
+  programming pattern, when considered in a smart contract context.
 
 [circles]: https://github.com/CirclesUBI/docs/blob/master/Circles.md
 [dispatch-to]: https://github.com/zigguratt/lll-dispatcher/blob/master/src/arithmetic.lll
 [dispatcher]: https://github.com/zigguratt/lll-dispatcher/blob/master/src/dispatcher.lll
 [resurrection]: http://blog.syrinx.net/the-resurrection-of-lll-part-1/
 [erc20-lll]: https://github.com/benjaminion/LLL_erc20
+[lll-creation]: https://gitlab.com/veox/lll-creation-patterns/blob/master/contracts/README.md
