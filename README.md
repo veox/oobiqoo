@@ -8,7 +8,7 @@ unit every second.
 
 In early design stage.
 
-License: GPLv3.
+License: AGPLv3. See [`LICENSE.txt`](LICENSE.txt).
 
 
 ## See also
