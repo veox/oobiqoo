@@ -26,27 +26,11 @@
                 "type": "address"
             }
         ],
-        "name": "owner_of",
+        "name": "get_owner_of",
         "outputs": [
             {
                 "name": "owner",
                 "type": "address"
-            }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "constant": true,
-        "inputs": [
-
-        ],
-        "name": "firtbytes",
-        "outputs": [
-            {
-                "name": "firstbytes",
-                "type": "string"
             }
         ],
         "payable": false,
@@ -77,11 +61,30 @@
                 "type": "address"
             }
         ],
-        "name": "oo_of",
+        "name": "get_oo_of",
         "outputs": [
             {
                 "name": "oo",
                 "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "name": "get_firstbytes",
+        "outputs": [
+            {
+                "name": "firstbytes",
+                "type": "string"
             }
         ],
         "payable": false,

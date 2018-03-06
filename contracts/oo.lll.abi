@@ -221,6 +221,22 @@
         "type": "function"
     },
     {
+        "constant": true,
+        "inputs": [
+
+        ],
+        "name": "get_default_approval_duration",
+        "outputs": [
+            {
+                "name": "duration",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
         "constant": false,
         "inputs": [
 
@@ -349,22 +365,6 @@
         "outputs": [
             {
                 "name": "mintable",
-                "type": "uint256"
-            }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "constant": true,
-        "inputs": [
-
-        ],
-        "name": "default_approval_duration",
-        "outputs": [
-            {
-                "name": "duration",
                 "type": "uint256"
             }
         ],
