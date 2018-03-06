@@ -8,5 +8,5 @@
       "class": "populus.compilation.backends.LLLBackend"
     }
   },
-  "version": "8"
+  "version": "7"
 }
