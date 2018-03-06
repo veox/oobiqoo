@@ -61,12 +61,6 @@
   ;; 0x ffffffff ffffffff ffffffff ffffffff ffffffff 00000000 00000000 ........
   (def '*storbase-config*
        0xffffffffffffffffffffffffffffffffffffffff000000000000000000000000)
-  (def '*storloc-owner*           (+ *storbase-config* 0x00))
-  (def '*storloc-name*            (+ *storbase-config* 0x01))
-  (def '*storloc-symbol*          (+ *storbase-config* 0x02))
-  (def '*storloc-decimals*        (+ *storbase-config* 0x03))
-  (def '*storloc-total-supply*    (+ *storbase-config* 0x04))
-  (def '*storloc-def-approve-dur* (+ *storbase-config* 0x05))
 
   ;;; =========================================================================
   ;;; CONSTANTS

@@ -12,6 +12,7 @@
   ;;; ABI
 
   ;; ERC20
+  (def '*get-owner*           0x8da5cb5b) ; owner()
   (def '*get-name*            0x06fdde03) ; name()
   (def '*get-symbol*          0x95d89b41) ; symbol()
   (def '*get-decimals*        0x313ce567) ; decimals()
@@ -38,6 +39,17 @@
   ;; dispatcher
   (def '*init*                0xe1c7392a) ; init()
   (def '*upgrade*             0x00000000) ; upgrade(FIXME)
+
+  ;;; =========================================================================
+  ;;; STORAGE LAYOUT
+
+  ;; single-slot configuration fields
+  (def '*storloc-owner*           (+ *storbase-config* 0x00))
+  (def '*storloc-name*            (+ *storbase-config* 0x01))
+  (def '*storloc-symbol*          (+ *storbase-config* 0x02))
+  (def '*storloc-decimals*        (+ *storbase-config* 0x03))
+  (def '*storloc-total-supply*    (+ *storbase-config* 0x04))
+  (def '*storloc-def-approve-dur* (+ *storbase-config* 0x05))
 
   ;;; =========================================================================
   ;;; INIT
@@ -83,14 +95,16 @@
        (fun *claim-ens-name*
             (stop))
 
+       (fun *get-owner*
+            (return *storloc-owner*))
        (fun *get-name*
-            (stop))
+            (return *storloc-name*))
        (fun *get-symbol*
-            (stop))
+            (return *storloc-symbol*))
        (fun *get-decimals*
-            (stop))
+            (return *storloc-decimals*))
        (fun *get-total-supply*
-            (stop))
+            (return *storloc-total-supply*))
        (fun *get-balance-of*
             (stop))
        (fun *get-allowance*
@@ -102,7 +116,7 @@
        (fun *get-mint-allowance*
             (stop))
        (fun *get-def-approve-dur*
-            (stop))
+            (return *storloc-def-approve-dur*))
 
        ;; TODO: mo match
        (revert 0 0)))))

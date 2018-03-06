@@ -5,6 +5,7 @@ contract oo {
     function supportsInterface(bytes4 _interfaceID) public view returns(bool _yes);
 
     // ERC20
+    function owner() public view returns(address _owner);
     function name() public view returns(string _name);
     function symbol() public view returns(string _symbol);
     function decimals() public view returns(uint8 _decimals);
