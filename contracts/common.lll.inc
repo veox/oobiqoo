@@ -126,7 +126,7 @@
   ;; @param function-selector The four-byte hash of a known function signature.
   ;; @param code-body The code to run in the case of a match.
 
-  (def 'function (function-selector code-body)
+  (def 'fun (function-selector code-body)
        (when (= (mload *memloc-function-selector*) function-selector)
          code-body))
 

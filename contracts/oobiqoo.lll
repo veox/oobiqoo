@@ -39,16 +39,16 @@
 
        ;; TODO: list incomplete!
 
-       (function *claim-ens-name*
-                 ())
+       (fun *claim-ens-name*
+            ())
 
-       (function *upgrade*
-                 ())
-       (function *init*
-                 ())
+       (fun *upgrade*
+            ())
+       (fun *init*
+            ())
 
-       (function *supports-interface*
-                 ())
+       (fun *supports-interface*
+            ())
 
        ;; fallback
        (revert 0 0))))

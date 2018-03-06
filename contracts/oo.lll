@@ -53,56 +53,56 @@
        unpayable
        mstore-function-selector
 
-       (function *transfer*
-                 ())
-       (function *approve*
-                 ())
-       (function *transfer-from*
-                 ())
+       (fun *transfer*
+            ())
+       (fun *approve*
+            ())
+       (fun *transfer-from*
+            ())
 
-       (function *mint*
-                 ())
-       (function *mint-amount*
-                 ())
-       (function *mint-and-transfer*
-                 ())
-       (function *approve-timed*
-                 ())
-       (function *set-def-approve-dur*
-                 ())
-       (function *transfer-other*
-                 ())
-       (function *burn*
-                 ())
+       (fun *mint*
+            ())
+       (fun *mint-amount*
+            ())
+       (fun *mint-and-transfer*
+            ())
+       (fun *approve-timed*
+            ())
+       (fun *set-def-approve-dur*
+            ())
+       (fun *transfer-other*
+            ())
+       (fun *burn*
+            ())
 
-       (function *upgrade*
-                 ())
-       (function *init*
-                 ())
+       (fun *upgrade*
+            ())
+       (fun *init*
+            ())
 
-       (function *claim-ens-name*
-                 ())
+       (fun *claim-ens-name*
+            ())
 
-       (function *get-name*
-                 ())
-       (function *get-symbol*
-                 ())
-       (function *get-decimals*
-                 ())
-       (function *get-total-supply*
-                 ())
-       (function *get-balance-of*
-                 ())
-       (function *get-allowance*
-                 ())
+       (fun *get-name*
+            ())
+       (fun *get-symbol*
+            ())
+       (fun *get-decimals*
+            ())
+       (fun *get-total-supply*
+            ())
+       (fun *get-balance-of*
+            ())
+       (fun *get-allowance*
+            ())
 
-       (function *supports-interface*
-                 ())
+       (fun *supports-interface*
+            ())
 
-       (function *get-mint-allowance*
-                 ())
-       (function *get-def-approve-dur*
-                 ())
+       (fun *get-mint-allowance*
+            ())
+       (fun *get-def-approve-dur*
+            ())
 
        ;; fallback
        (revert 0 0))))
