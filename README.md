@@ -11,12 +11,20 @@ In early implementation stage.
 
 ## Development
 
-[Populus](https://github.com/ethereum/populus/) is used for development.
+[Populus](https://github.com/ethereum/populus/)and Python 3 are used for
+development.
+
 Although `requirements.txt` specifies `populus==2.1.0`, the actual version
-required is the one in [my `populus/lll-to-merge`
-branch](https://github.com/veox/populus/tree/lll-to-merge), at least until
-[`ethereum/populus` PR 408](https://github.com/ethereum/populus/pull/408)
-is merged.
+required is the one in [my `populus/lll-to-merge` branch][populllus], at
+least until [`ethereum/populus` PR 408][populus-pr408] is merged.
+
+That is not likely to happen in the near future, since Piper Merriam, the
+original developer of Populus, has no time to maintain this tool. I might
+fork it eventually as Populllus, just so this very project can be built
+more easily.
+
+[populllus]: https://github.com/veox/populus/tree/lll-to-merge
+[populus-pr408]: https://github.com/ethereum/populus/pull/408
 
 
 ## License
