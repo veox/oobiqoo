@@ -11,11 +11,11 @@ In early implementation stage.
 
 ## Development
 
-[Populus](https://github.com/ethereum/populus/)and Python 3 are used for
+[Populus](https://github.com/ethereum/populus/) and Python 3 are used for
 development.
 
 Although `requirements.txt` specifies `populus==2.1.0`, the actual version
-required is the one in [my `populus/lll-to-merge` branch][populllus], at
+needed is the one in [my `populus/lll-to-merge` branch][populllus], at
 least until [`ethereum/populus` PR 408][populus-pr408] is merged.
 
 That is not likely to happen in the near future, since Piper Merriam, the
