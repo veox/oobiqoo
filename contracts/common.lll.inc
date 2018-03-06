@@ -49,10 +49,18 @@
   (def '*storbase-return-size*
        0xffffffffffffffffffffffffffffffff00000000000000010000000000000000)
 
+  ;; ERC165 supportsInterface
+  ;; 0x ffffffff ffffffff ffffffff ffffffff 00000000 00000002 00000000 ........
+  (def '*storbase-supports-interface*
+       0xffffffffffffffffffffffffffffffff00000000000000020000000000000000)
+  ;; 0x ffffffff ffffffff ffffffff ffffffff 00000000 00000003 00000000 ........
+  (def '*storbase-supports-interface-extension*
+       0xffffffffffffffffffffffffffffffff00000000000000030000000000000000)
+
   ;; configuration fields
-  ;; 0x ffffffff ffffffff ffffffff ffffffff 00000001 00000000 00000000 ........
+  ;; 0x ffffffff ffffffff ffffffff ffffffff ffffffff 00000000 00000000 ........
   (def '*storbase-config*
-       0xffffffffffffffffffffffffffffffff00000001000000000000000000000000)
+       0xffffffffffffffffffffffffffffffff ffffffff000000000000000000000000)
   (def '*storloc-owner*           (+ *storbase-config* 0x00))
   (def '*storloc-name*            (+ *storbase-config* 0x01))
   (def '*storloc-symbol*          (+ *storbase-config* 0x02))

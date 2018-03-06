@@ -25,11 +25,11 @@
   (def '*supports-interface*  0x01ffc9a7) ; supportsInterface(bytes4)
   ;; oo
   (def '*get-mint-allowance*  0x00000000) ; get_mint_allowance()
+  (def '*get-def-approve-dur* 0x00000000) ; default_approval_duration()
   (def '*mint*                0x00000000) ; mint()
   (def '*mint-amount*         0x00000000) ; mint(uint256)
   (def '*mint-and-transfer*   0x00000000) ; mint_and_transfer(address,uint256)
   (def '*approve-timed*       0x00000000) ; approve_timed(address,uint256,uint256)
-  (def '*def-approve-dur*     0x00000000) ; default_approval_duration()
   (def '*set-def-approve-dur* 0x00000000) ; set_default_approval_duration(uint256)
   (def '*transfer-other*      0x00000000) ; transfer_other(address,address,uint256)
   (def '*burn*                0x00000000) ; burn(uint256)
@@ -100,6 +100,8 @@
                  ())
 
        (function *get-mint-allowance*
+                 ())
+       (function *get-def-approve-dur*
                  ())
 
        ;; fallback
