@@ -60,7 +60,7 @@
   ;; configuration fields
   ;; 0x ffffffff ffffffff ffffffff ffffffff ffffffff 00000000 00000000 ........
   (def '*storbase-config*
-       0xffffffffffffffffffffffffffffffff ffffffff000000000000000000000000)
+       0xffffffffffffffffffffffffffffffffffffffff000000000000000000000000)
   (def '*storloc-owner*           (+ *storbase-config* 0x00))
   (def '*storloc-name*            (+ *storbase-config* 0x01))
   (def '*storloc-symbol*          (+ *storbase-config* 0x02))

@@ -8,10 +8,10 @@ contract oobiqoo {
     // TODO: does anything need to be here?..
 
     // oobiqoo
-    function firtbytes() public view returns(string firstbytes);
+    function get_firstbytes(address) public view returns(string firstbytes);
+    function get_oo_of(address owner) public view returns(address oo);
+    function get_owner_of(address oo) public view returns(address owner);
     function claim_ENS_name() public returns(string firstbytes);
-    function oo_of(address owner) public view returns(address oo);
-    function owner_of(address oo) public view returns(address owner);
 
     // dispatcher
     function init() external returns(bool success);

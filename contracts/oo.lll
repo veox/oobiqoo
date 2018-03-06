@@ -24,20 +24,20 @@
   ;; ERC165
   (def '*supports-interface*  0x01ffc9a7) ; supportsInterface(bytes4)
   ;; oo
-  (def '*get-mint-allowance*  0x00000000) ; get_mint_allowance()
-  (def '*get-def-approve-dur* 0x00000000) ; default_approval_duration()
-  (def '*mint*                0x00000000) ; mint()
-  (def '*mint-amount*         0x00000000) ; mint(uint256)
-  (def '*mint-and-transfer*   0x00000000) ; mint_and_transfer(address,uint256)
-  (def '*approve-timed*       0x00000000) ; approve_timed(address,uint256,uint256)
-  (def '*set-def-approve-dur* 0x00000000) ; set_default_approval_duration(uint256)
-  (def '*transfer-other*      0x00000000) ; transfer_other(address,address,uint256)
-  (def '*burn*                0x00000000) ; burn(uint256)
+  (def '*get-mint-allowance*  0xd14863a0) ; get_mint_allowance()
+  (def '*get-def-approve-dur* 0x64f8ad1f) ; get_default_approval_duration()
+  (def '*mint*                0x1249c58b) ; mint()
+  (def '*mint-amount*         0xa0712d68) ; mint(uint256)
+  (def '*mint-and-transfer*   0x52ec8a58) ; mint_and_transfer(address,uint256)
+  (def '*approve-timed*       0x31ef916a) ; approve_timed(address,uint256,uint256)
+  (def '*set-def-approve-dur* 0x320e6c01) ; set_default_approval_duration(uint256)
+  (def '*transfer-other*      0xca607c4e) ; transfer_other(address,address,uint256)
+  (def '*burn*                0x3a181577) ; burn(uint256)
   ;; oobiqoo
-  (def '*claim-ens-name*      0x00000000) ; claim_ENS_name()
+  (def '*claim-ens-name*      0x6c8dea3b) ; claim_ENS_name()
   ;; dispatcher
-  (def '*init*                0x00000000) ; init()
-  (def '*upgrade*             0x00000000) ; upgrade(???)
+  (def '*init*                0xe1c7392a) ; init()
+  (def '*upgrade*             0x00000000) ; upgrade(FIXME)
 
   ;;; =========================================================================
   ;;; INIT
@@ -54,55 +54,55 @@
        mstore-function-selector
 
        (fun *transfer*
-            ())
+            (stop))
        (fun *approve*
-            ())
+            (stop))
        (fun *transfer-from*
-            ())
+            (stop))
 
        (fun *mint*
-            ())
+            (stop))
        (fun *mint-amount*
-            ())
+            (stop))
        (fun *mint-and-transfer*
-            ())
+            (stop))
        (fun *approve-timed*
-            ())
+            (stop))
        (fun *set-def-approve-dur*
-            ())
+            (stop))
        (fun *transfer-other*
-            ())
+            (stop))
        (fun *burn*
-            ())
+            (stop))
 
        (fun *upgrade*
-            ())
+            (stop))
        (fun *init*
-            ())
+            (stop))
 
        (fun *claim-ens-name*
-            ())
+            (stop))
 
        (fun *get-name*
-            ())
+            (stop))
        (fun *get-symbol*
-            ())
+            (stop))
        (fun *get-decimals*
-            ())
+            (stop))
        (fun *get-total-supply*
-            ())
+            (stop))
        (fun *get-balance-of*
-            ())
+            (stop))
        (fun *get-allowance*
-            ())
+            (stop))
 
        (fun *supports-interface*
-            ())
+            (stop))
 
        (fun *get-mint-allowance*
-            ())
+            (stop))
        (fun *get-def-approve-dur*
-            ())
+            (stop))
 
-       ;; fallback
-       (revert 0 0))))
+       ;; TODO: mo match
+       (revert 0 0)))))

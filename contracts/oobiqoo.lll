@@ -12,43 +12,45 @@
   ;;; ABI
 
   ;; ENS
-  (def '*TODO*                0x00000000)
+  (def '*ens-root-addr*       0x314159265dD8dbb310642f98f50C066173C1259b)
   ;; ERC165
   (def '*supports-interface*  0x01ffc9a7) ; supportsInterface(bytes4)
   ;; oobiqoo
-  (def '*claim-ens-name*      0x00000000) ; claimENSName()
+  (def '*get-firstbytes*      0xc6430e29) ; get_firstbytes(address)
+  (def '*get-oo-of*           0xc5e08ba9) ; get_oo_of(address)
+  (def '*get-owner-of*        0x0a91f2a5) ; get_owner_of(address)
+  (def '*claim-ens-name*      0x6c8dea3b) ; claim_ENS_name()
   ;; dispatcher
   ;; TODO: Does the registry need to be a library? I.e. can't it store
   ;;       everything on ENS?
-  (def '*init*                0x00000000) ; init()
-  (def '*upgrade*             0x00000000) ; upgrade(???)
+  (def '*init*                0xe1c7392a) ; init()
+  (def '*upgrade*             0x00000000) ; upgrade(FIXME)
 
   ;;; =========================================================================
   ;;; INIT
 
-  (seq
-    unpayable
+  ;; none!
 
   ;;; =========================================================================
   ;;; RUNTIME
 
-    (returnlll
-     (seq
-       unpayable
-       mstore-function-selector
+  (returnlll
+   (seq
+     unpayable
+     mstore-function-selector
 
-       ;; TODO: list incomplete!
+     ;; TODO: list incomplete!
 
-       (fun *claim-ens-name*
-            ())
+     (fun *claim-ens-name*
+          (stop)) ;; FIXME
 
-       (fun *upgrade*
-            ())
-       (fun *init*
-            ())
+     (fun *upgrade*
+          (stop)) ;; FIXME
+     (fun *init*
+          (stop)) ;; FIXME
 
-       (fun *supports-interface*
-            ())
+     (fun *supports-interface*
+          (stop)) ;; FIXME
 
-       ;; fallback
-       (revert 0 0))))
+     ;; TODO: no match
+     (revert 0 0))))
