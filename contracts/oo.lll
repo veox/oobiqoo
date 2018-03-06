@@ -66,34 +66,34 @@
        mstore-function-selector
 
        (fun *transfer*
-            (stop))
+            (stop)) ; FIXME
        (fun *approve*
-            (stop))
+            (stop)) ; FIXME
        (fun *transfer-from*
-            (stop))
+            (stop)) ; FIXME
 
        (fun *mint*
-            (stop))
+            (stop)) ; FIXME
        (fun *mint-amount*
-            (stop))
+            (stop)) ; FIXME
        (fun *mint-and-transfer*
-            (stop))
+            (stop)) ; FIXME
        (fun *approve-timed*
-            (stop))
+            (stop)) ; FIXME
        (fun *set-def-approve-dur*
-            (stop))
+            (stop)) ; FIXME
        (fun *transfer-other*
-            (stop))
+            (stop)) ; FIXME
        (fun *burn*
-            (stop))
+            (stop)) ; FIXME
 
        (fun *upgrade*
-            (stop))
+            (stop)) ; FIXME
        (fun *init*
-            (stop))
+            (stop)) ; FIXME
 
        (fun *claim-ens-name*
-            (stop))
+            (stop)) ; FIXME
 
        (fun *get-owner*
             (return *storloc-owner*))
@@ -106,15 +106,15 @@
        (fun *get-total-supply*
             (return *storloc-total-supply*))
        (fun *get-balance-of*
-            (stop))
+            (stop)) ; FIXME
        (fun *get-allowance*
-            (stop))
+            (stop)) ; FIXME
 
        (fun *supports-interface*
-            (stop))
+            (stop)) ; FIXME
 
        (fun *get-mint-allowance*
-            (stop))
+            (stop)) ; FIXME
        (fun *get-def-approve-dur*
             (return *storloc-def-approve-dur*))
 
