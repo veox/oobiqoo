@@ -77,22 +77,7 @@
   ;;; =========================================================================
   ;;; UTILS
 
-  ;; --------------------------------------------------------------------------
-  ;; @author Daniel Ellison <zigguratt>, Noel Maersk <veox>
-  ;; @notice Shifts the leftmost bits of a 32-byte number right.
-  ;; @dev E.g. (shift-right *data* 224) will shift *data* by 224/8 == 28 bytes,
-  ;;      leaving the leftmost 32-28 == 4 bytes.
-  ;;      0x14ab90388092664827928d90384c73d82c5bf21abb61dd7d4971fc65f4851dfb
-  ;;      0x0000000000000000000000000000000000000000000000000000000014ab9038
-  ;; @param input A 32-byte number.
-
-  ;; TODO: same as lllc-provided `shr`?..
-  (def 'shift-right (input nbits)
-       (div input (exp 2 nbits)))
-
-  ;; TODO: same as lllc-provided `shl`?..
-  (def 'shift-left (input nbits)
-       (mul input (exp 2 nbits)))
+  ;; none!
 
   ;;; =========================================================================
   ;;; WEB3 ABI
@@ -103,7 +88,7 @@
   ;;         bytes of the call data.
 
   (def 'calldata-function-selector
-       (shift-right (calldataload 0x00) 224))
+       (shr (calldataload 0x00) 224))
 
   ;; --------------------------------------------------------------------------
   ;; @author Ben Edgington <benjaminion>
