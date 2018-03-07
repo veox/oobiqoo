@@ -65,7 +65,9 @@
 
     (returnlll
      (seq
-       unpayable
+       unpayable ; TODO: remove?
+       ;; FIXME: uncomment when testing properly as a library, not standalone
+       ;; (when (= 0 (sload *storloc-owner*) (revert 0 0)))
        mstore-function-selector
 
        ;;; --------------------------------------------------------------------
@@ -100,8 +102,19 @@
 
        (fun *upgrade*
             (stop)) ; FIXME
+
        (fun *init*
-            (stop)) ; FIXME
+            (seq
+              ;; FIXME: can still be called on lib if entry-guard not present!
+              ;; should only be called once
+              (unless (= 0 (sload *storloc-owner*))       (revert 0 0))
+              (unless (= 0 (sload *storloc-last-minted*)) (revert 0 0))
+              ;; populate configuration fields
+              (sstore *storloc-owner* (caller))
+              (sstore *storloc-last-minted* (timestamp))
+              (sstore *storloc-def-approve-dur* (* 60 60 24 7))
+              ;; success?..
+              (return 0 0)))
 
        ;;; --------------------------------------------------------------------
        ;;; oobiqoo writes
@@ -141,7 +154,8 @@
        ;;; oo reads
 
        (fun *get-mintable*
-            (stop)) ; FIXME
+            (return (- (timestamp) (sload *storloc-last-minted*))))
+
        (fun *get-def-approve-dur*
             (return (sload *storloc-def-approve-dur*)))
 
