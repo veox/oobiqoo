@@ -62,6 +62,11 @@
   (def '*storbase-config*
        0xffffffffffffffffffffffffffffffffffffffff000000000000000000000000)
 
+  ;; variable fields
+  ;; 0x ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff 00000000 ........
+  (def '*storbase-vars*
+       0xffffffffffffffffffffffffffffffffffffffffffffffff0000000000000000)
+
   ;;; =========================================================================
   ;;; CONSTANTS
 

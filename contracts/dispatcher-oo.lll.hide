@@ -52,7 +52,8 @@
                             (return-size (mload *memloc-function-selector*))))
        (revert 0 0))
 
-       ;; how much was this function supposed to return?
+     ;; how much was this function supposed to return?
+     ;; FIXME: currently not loading properly from storage!
      (mstore *memloc-scratchpad*
              (return-size (mload *memloc-function-selector*)))
 

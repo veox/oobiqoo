@@ -51,6 +51,9 @@
   (def '*storloc-total-supply*    (+ *storbase-config* 0x04))
   (def '*storloc-def-approve-dur* (+ *storbase-config* 0x05))
 
+  ;; single-slot variables
+  (def '*storloc-last-minted*     (+ *storbase-vars* 0x00))
+
   ;;; =========================================================================
   ;;; INIT
 
@@ -65,12 +68,17 @@
        unpayable
        mstore-function-selector
 
+       ;;; ====================================================================
+       ;;; ERC20 writes
        (fun *transfer*
             (stop)) ; FIXME
        (fun *approve*
             (stop)) ; FIXME
        (fun *transfer-from*
             (stop)) ; FIXME
+
+       ;;; ====================================================================
+       ;;; oo writes
 
        (fun *mint*
             (stop)) ; FIXME
@@ -87,13 +95,22 @@
        (fun *burn*
             (stop)) ; FIXME
 
+       ;;; ====================================================================
+       ;;; dispatcher writes
+
        (fun *upgrade*
             (stop)) ; FIXME
        (fun *init*
             (stop)) ; FIXME
 
+       ;;; ====================================================================
+       ;;; oobiqoo writes
+
        (fun *claim-ens-name*
             (stop)) ; FIXME
+
+       ;;; ====================================================================
+       ;;; ERC20 reads
 
        (fun *get-owner*
             (return (sload *storloc-owner*)))
@@ -110,13 +127,21 @@
        (fun *get-allowance*
             (stop)) ; FIXME
 
-       (fun *supports-interface*
-            (stop)) ; FIXME
+       ;;; ====================================================================
+       ;;; oo reads
 
        (fun *get-mint-allowance*
             (stop)) ; FIXME
        (fun *get-def-approve-dur*
             (return (sload *storloc-def-approve-dur*)))
 
-       ;; TODO: mo match
+       ;;; ====================================================================
+       ;;; ERC165 reads
+
+       (fun *supports-interface*
+            (stop)) ; FIXME
+
+       ;;; ====================================================================
+       ;;; TODO: mo match
+
        (revert 0 0)))))
