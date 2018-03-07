@@ -25,7 +25,7 @@
   ;; ERC165
   (def '*supports-interface*  0x01ffc9a7) ; supportsInterface(bytes4)
   ;; oo
-  (def '*get-mint-allowance*  0xd14863a0) ; get_mint_allowance()
+  (def '*get-mintable*        0xf42598f0) ; get_mintable()
   (def '*get-def-approve-dur* 0x64f8ad1f) ; get_default_approval_duration()
   (def '*mint*                0x1249c58b) ; mint()
   (def '*mint-amount*         0xa0712d68) ; mint(uint256)
@@ -140,7 +140,7 @@
        ;;; --------------------------------------------------------------------
        ;;; oo reads
 
-       (fun *get-mint-allowance*
+       (fun *get-mintable*
             (stop)) ; FIXME
        (fun *get-def-approve-dur*
             (return (sload *storloc-def-approve-dur*)))
