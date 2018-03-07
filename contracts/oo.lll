@@ -129,7 +129,7 @@
 
        (fun *get-balance-of*
             (seq
-              has-one-arg
+              calldata-has-one-arg
               (def '+addr+ cdload-arg1)
               (is-address +addr+)
               (return (sload (+ *storbase-balance* +addr+)))))

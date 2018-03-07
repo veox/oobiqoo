@@ -80,6 +80,7 @@
   ;; --------------------------------------------------------------------------
   ;; @author Ben Edgington <benjaminion>
   ;; @notice Convenience macros to load function arguments.
+  ;; @dev To be used with "web3-compatible functions" only.
 
   (def 'cdload-arg1 (calldataload 0x04))
   (def 'cdload-arg2 (calldataload 0x24))
@@ -88,10 +89,11 @@
   ;; --------------------------------------------------------------------------
   ;; @author Ben Edgington <benjaminion>
   ;; @notice Ensure being called with the expected number of arguments.
+  ;; @dev To be used with "web3-compatible functions" only.
 
-  (def 'has-one-arg    (unless (= 0x24 (calldatasize)) (revert 0 0)))
-  (def 'has-two-args   (unless (= 0x44 (calldatasize)) (revert 0 0)))
-  (def 'has-three-args (unless (= 0x64 (calldatasize)) (revert 0 0)))
+  (def 'calldata-has-one-arg    (unless (= 0x24 (calldatasize)) (revert 0 0)))
+  (def 'calldata-has-two-args   (unless (= 0x44 (calldatasize)) (revert 0 0)))
+  (def 'calldata-has-three-args (unless (= 0x64 (calldatasize)) (revert 0 0)))
 
   ;; --------------------------------------------------------------------------
   ;; @author Ben Edgington <benjaminion>
