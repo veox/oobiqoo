@@ -4,7 +4,7 @@
 def get_oo_instance(chain, owner=None):
     if owner is None:
         owner = chain.web3.eth.coinbase
-    oo, _ = chain.provider.get_or_deploy_contract('oo', deploy_transaction={"from": owner})
+    oo, _ = chain.provider.get_or_deploy_contract('oo', deploy_transaction={'from': owner})
     assert oo.address != 0
     assert oo.address != owner
     return oo
@@ -26,12 +26,12 @@ def test_f_get_owner(chain):
 
 def test_f_get_name(chain):
     oo = get_oo_instance(chain)
-    assert oo.call().name() == "oo"
+    assert oo.call().name() == 'oo'
     return
 
 def test_f_get_symbol(chain):
     oo = get_oo_instance(chain)
-    assert oo.call().symbol() == "oo." + chain.web3.eth.coinbase[2:]
+    assert oo.call().symbol() == 'oo.' + chain.web3.eth.coinbase[2:]
     return
 
 def test_f_get_decimals(chain):
@@ -47,4 +47,9 @@ def test_f_get_total_supply(chain):
 def test_f_get_default_approval_duration(chain):
     oo = get_oo_instance(chain)
     assert oo.call().get_default_approval_duration() == 60*60*24*7
+    return
+
+def test_f_get_balance(chain):
+    oo = get_oo_instance(chain)
+    assert oo.call().balanceOf(chain.web3.eth.coinbase) == 0
     return

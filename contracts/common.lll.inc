@@ -77,7 +77,28 @@
   ;;; =========================================================================
   ;;; UTILS
 
-  ;; none!
+  ;; --------------------------------------------------------------------------
+  ;; @author Ben Edgington <benjaminion>
+  ;; @notice Convenience macros to load function arguments.
+
+  (def 'cdload-arg1 (calldataload 0x04))
+  (def 'cdload-arg2 (calldataload 0x24))
+  (def 'cdload-arg3 (calldataload 0x44))
+
+  ;; --------------------------------------------------------------------------
+  ;; @author Ben Edgington <benjaminion>
+  ;; @notice Ensure being called with the expected number of arguments.
+
+  (def 'has-one-arg    (unless (= 0x24 (calldatasize)) (revert 0 0)))
+  (def 'has-two-args   (unless (= 0x44 (calldatasize)) (revert 0 0)))
+  (def 'has-three-args (unless (= 0x64 (calldatasize)) (revert 0 0)))
+
+  ;; --------------------------------------------------------------------------
+  ;; @author Ben Edgington <benjaminion>
+  ;; @notice Check that address contained in 32-byte word has only 20 lower
+  ;;         ones set. (20 bytes == 160 bits)
+
+  (def 'is-address (addr) (when (shr addr 160) (revert 0 0)))
 
   ;;; =========================================================================
   ;;; WEB3 ABI

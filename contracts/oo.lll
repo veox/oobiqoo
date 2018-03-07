@@ -68,7 +68,7 @@
        unpayable
        mstore-function-selector
 
-       ;;; ====================================================================
+       ;;; --------------------------------------------------------------------
        ;;; ERC20 writes
        (fun *transfer*
             (stop)) ; FIXME
@@ -77,7 +77,7 @@
        (fun *transfer-from*
             (stop)) ; FIXME
 
-       ;;; ====================================================================
+       ;;; --------------------------------------------------------------------
        ;;; oo writes
 
        (fun *mint*
@@ -95,7 +95,7 @@
        (fun *burn*
             (stop)) ; FIXME
 
-       ;;; ====================================================================
+       ;;; --------------------------------------------------------------------
        ;;; dispatcher writes
 
        (fun *upgrade*
@@ -103,31 +103,41 @@
        (fun *init*
             (stop)) ; FIXME
 
-       ;;; ====================================================================
+       ;;; --------------------------------------------------------------------
        ;;; oobiqoo writes
 
        (fun *claim-ens-name*
             (stop)) ; FIXME
 
-       ;;; ====================================================================
+       ;;; --------------------------------------------------------------------
        ;;; ERC20 reads
 
        (fun *get-owner*
             (return (sload *storloc-owner*)))
+
        (fun *get-name*
             (return (sload *storloc-name*)))
+
        (fun *get-symbol*
             (return (sload *storloc-symbol*)))
+
        (fun *get-decimals*
             (return (sload *storloc-decimals*)))
+
        (fun *get-total-supply*
             (return (sload *storloc-total-supply*)))
+
        (fun *get-balance-of*
-            (stop)) ; FIXME
+            (seq
+              has-one-arg
+              (def '+addr+ cdload-arg1)
+              (is-address +addr+)
+              (return (sload (+ *storbase-balance* +addr+)))))
+
        (fun *get-allowance*
             (stop)) ; FIXME
 
-       ;;; ====================================================================
+       ;;; --------------------------------------------------------------------
        ;;; oo reads
 
        (fun *get-mint-allowance*
@@ -135,13 +145,13 @@
        (fun *get-def-approve-dur*
             (return (sload *storloc-def-approve-dur*)))
 
-       ;;; ====================================================================
+       ;;; --------------------------------------------------------------------
        ;;; ERC165 reads
 
        (fun *supports-interface*
             (stop)) ; FIXME
 
-       ;;; ====================================================================
+       ;;; --------------------------------------------------------------------
        ;;; TODO: mo match
 
        (revert 0 0)))))
