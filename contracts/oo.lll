@@ -96,15 +96,15 @@
             (stop)) ; FIXME
 
        (fun *get-owner*
-            (return *storloc-owner*))
+            (return (sload *storloc-owner*)))
        (fun *get-name*
-            (return *storloc-name*))
+            (return (sload *storloc-name*)))
        (fun *get-symbol*
-            (return *storloc-symbol*))
+            (return (sload *storloc-symbol*)))
        (fun *get-decimals*
-            (return *storloc-decimals*))
+            (return (sload *storloc-decimals*)))
        (fun *get-total-supply*
-            (return *storloc-total-supply*))
+            (return (sload *storloc-total-supply*)))
        (fun *get-balance-of*
             (stop)) ; FIXME
        (fun *get-allowance*
@@ -116,7 +116,7 @@
        (fun *get-mint-allowance*
             (stop)) ; FIXME
        (fun *get-def-approve-dur*
-            (return *storloc-def-approve-dur*))
+            (return (sload *storloc-def-approve-dur*)))
 
        ;; TODO: mo match
        (revert 0 0)))))
