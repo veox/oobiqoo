@@ -41,6 +41,18 @@
   (def '*upgrade*             0x00000000) ; upgrade(FIXME)
 
   ;;; =========================================================================
+  ;;; EVENTS
+
+  ;; ERC20
+  (def '*event-transfer* ; Transfer(address,address,uint256)
+       0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef)
+  (def '*event-approval* ; Approval(address,address,uint256)
+       0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925)
+  ;; oo
+  (def '*event-TODO*     ; TODO
+       0x0)
+
+  ;;; =========================================================================
   ;;; STORAGE LAYOUT
 
   ;; single-slot configuration fields
@@ -53,6 +65,13 @@
 
   ;; single-slot variables
   (def '*storloc-last-minted*     (+ *storbase-vars* 0x00))
+
+  ;;; =========================================================================
+  ;;; UTILS
+
+  ;;
+  (def 'sload-balance  (addr)     (sload  (+ *storbase-balance* addr)))
+  (def 'sstore-balance (addr val) (sstore (+ *storbase-balance* addr) val))
 
   ;;; =========================================================================
   ;;; INIT
@@ -73,9 +92,23 @@
        ;;; --------------------------------------------------------------------
        ;;; ERC20 writes
        (fun *transfer*
-            (stop)) ; FIXME
+            (seq
+              calldata-has-two-args
+              (def '+from+   (caller))
+              (def '+to+     cdload-arg1)
+              (def '+amount+ cdload-arg2)
+              (when-is-not-address +to+ (revert 0 0))
+              (when (> +amount+ (sload-balance +from+)) (revert 0 0))
+
+              (sstore-balance +from+ (- (sload-balance +from+) +amount+))
+              (sstore-balance +to+   (+ (sload-balance +to+)   +amount+))
+
+              (emit2 *event-transfer* +from+ +to+ +amount+ 32)
+              (return *true*)))
+
        (fun *approve*
             (stop)) ; FIXME
+
        (fun *transfer-from*
             (stop)) ; FIXME
 
@@ -114,7 +147,7 @@
               (sstore *storloc-last-minted* (timestamp))
               (sstore *storloc-def-approve-dur* (* 60 60 24 7))
               ;; success?..
-              (return 0 0)))
+              (return *true*)))
 
        ;;; --------------------------------------------------------------------
        ;;; oobiqoo writes
@@ -144,7 +177,7 @@
             (seq
               calldata-has-one-arg
               (def '+addr+ cdload-arg1)
-              (is-address +addr+)
+              (when-is-not-address +addr+ (revert 0 0))
               (return (sload (+ *storbase-balance* +addr+)))))
 
        (fun *get-allowance*
