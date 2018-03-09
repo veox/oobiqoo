@@ -28,7 +28,6 @@
   (def '*get-mintable*        0xf42598f0) ; get_mintable()
   (def '*get-def-approve-dur* 0x64f8ad1f) ; get_default_approval_duration()
   (def '*mint*                0x1249c58b) ; mint()
-  (def '*mint-amount*         0xa0712d68) ; mint(uint256)
   (def '*mint-and-transfer*   0x52ec8a58) ; mint_and_transfer(address,uint256)
   (def '*approve-timed*       0x31ef916a) ; approve_timed(address,uint256,uint256)
   (def '*set-def-approve-dur* 0x320e6c01) ; set_default_approval_duration(uint256)
@@ -49,7 +48,11 @@
   (def '*event-approval* ; Approval(address,address,uint256)
        0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925)
   ;; oo
-  (def '*event-TODO*     ; TODO
+  (def '*event-def-approve-dur-set* ; default_approval_duration_set(uint256)
+       0x0)
+  (def '*event-burned*              ; burned(address,uint256)
+       0x0)
+  (def '*event-minted*              ; minted(uint256)
        0x0)
 
   ;;; =========================================================================
@@ -72,6 +75,13 @@
   ;;
   (def 'sload-balance  (addr)     (sload  (+ *storbase-balance* addr)))
   (def 'sstore-balance (addr val) (sstore (+ *storbase-balance* addr) val))
+
+  ;;
+  (def 'owner (sload *storloc-owner*))
+  (def 'mintable (- (timestamp) (sload *storloc-last-minted*)))
+
+  ;;
+  (def 'only-owner (unless (= (caller) owner) (revert 0 0)))
 
   ;;; =========================================================================
   ;;; INIT
@@ -116,17 +126,31 @@
        ;;; oo writes
 
        (fun *mint*
-            (stop)) ; FIXME
-       (fun *mint-amount*
-            (stop)) ; FIXME
+            (seq
+              only-owner
+
+              ;; TODO: rework to just use stack
+              (mstore *memloc-scratchpad* mintable)
+              (sstore *storloc-last-minted* (timestamp))
+              (sstore-balance owner (+ (sload-balance owner)
+                                       (mload *memloc-scratchpad*)))
+
+              ;; not using emit0 macro, since want direct memloc specification
+              (log1 *event-minted* *memloc-scratchpad* 32)
+              (return *memloc-scratchpad* 32)))
+
        (fun *mint-and-transfer*
             (stop)) ; FIXME
+
        (fun *approve-timed*
             (stop)) ; FIXME
+
        (fun *set-def-approve-dur*
             (stop)) ; FIXME
+
        (fun *transfer-other*
             (stop)) ; FIXME
+
        (fun *burn*
             (stop)) ; FIXME
 
@@ -187,7 +211,7 @@
        ;;; oo reads
 
        (fun *get-mintable*
-            (return (- (timestamp) (sload *storloc-last-minted*))))
+            (return mintable))
 
        (fun *get-def-approve-dur*
             (return (sload *storloc-def-approve-dur*)))

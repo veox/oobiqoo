@@ -19,6 +19,12 @@ def deploy(chain, owner=None):
 
     return oo
 
+def wait_n_blocks(chain, nblocks=1):
+    '''Rattle the chain.'''
+    waituntil = chain.web3.eth.getBlock('latest')['number'] + nblocks
+    chain.wait.for_block(block_number=waituntil)
+    return
+
 # =============================================================================
 # TESTS
 
@@ -27,7 +33,7 @@ def test_deployment(chain):
     return
 
 # =============================================================================
-# TESTS: non-writing
+# TESTS: read-only
 
 def test_f_get_owner(chain):
     oo = deploy(chain)
@@ -70,15 +76,53 @@ def test_f_get_mintable(chain):
     # mintable a bit after deployment (likely 1 block later)
     mintable1 = oo.call().get_mintable()
 
-    # roll the chain
-    waitnblocks = 10
-    waituntil = chain.web3.eth.getBlock('latest')['number'] + waitnblocks
-    chain.wait.for_block(block_number=waituntil)
+    wait_n_blocks(chain, 10)
 
     # mintable on block2
     mintable2 = oo.call().get_mintable()
 
     assert mintable2 > mintable1
     assert mintable2 <= 15 * waitnblocks
+
+    return
+
+# =============================================================================
+# TESTS: read/write
+
+def test_f_mint(chain):
+    oo = deploy(chain)
+
+    acct = chain.web3.eth.coinbase
+
+    # make sure there'll be something to mint
+    wait_n_blocks(chain, 10)
+    balance1 = oo.call().balanceOf(acct)
+    mintable1 = oo.call().get_mintable()
+
+    # after some time - still no balance, can mint
+    assert balance1 == 0
+    assert mintable1 > 0
+
+    txhash = oo.transact().mint()
+    txreceipt = chain.wait.for_receipt(txhash)
+    balance2 = oo.call().balanceOf(acct)
+    mintable2 = oo.call().get_mintable()
+
+    # got balance, there's less left to mint
+    assert balance2 > 0
+    assert mintable1 > mintable2 > 0
+
+    return
+
+def test_f_transfer(chain):
+    oo = deploy(chain)
+
+    fromacct = chain.web3.eth.coinbase
+    toacct = chain.web3.eth.accounts[1]
+
+    oo.transact().mint()
+    oo.transact().transfer(toacct, 1)
+
+    assert False # TODO
 
     return

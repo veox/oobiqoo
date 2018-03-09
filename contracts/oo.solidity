@@ -22,7 +22,6 @@ contract oo {
     function get_mintable() public view returns(uint256 mintable);
     function get_default_approval_duration() public view returns(uint256 duration);
     function mint() public returns(uint256 minted);
-    function mint(uint256 amount) public returns(uint256 minted);
     function mint_and_transfer(address to, uint256 amount) public returns(uint256 minted);
     function approve_timed(address spender, uint256 amount, uint256 duration) public returns(bool success);
     function set_default_approval_duration(uint256 duration) public returns(bool success);
