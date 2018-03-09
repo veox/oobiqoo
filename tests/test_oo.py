@@ -119,10 +119,18 @@ def test_f_transfer(chain):
 
     fromacct = chain.web3.eth.coinbase
     toacct = chain.web3.eth.accounts[1]
+    amount = 42
+
+    # make sure there'll be something to mint
+    wait_n_blocks(chain, 10)
 
     oo.transact().mint()
-    oo.transact().transfer(toacct, 1)
 
-    assert False # TODO
+    balance1 = oo.call().balanceOf(fromacct)
+    oo.transact().transfer(toacct, amount)
+    balance2 = oo.call().balanceOf(fromacct)
+
+    assert oo.call().balanceOf(toacct) == amount
+    assert (balance1 - balance2) == amount
 
     return
