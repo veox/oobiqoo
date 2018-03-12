@@ -1,3 +1,8 @@
+#
+
+import pytest
+from ethereum.tester import TransactionFailed
+
 import time
 
 # =============================================================================
@@ -89,30 +94,50 @@ def test_f_get_mintable(chain):
 # =============================================================================
 # TESTS: read/write
 
-def test_f_mint(chain):
-    oo = deploy(chain)
+@pytest.mark.incremental
+class TestMinting(object):
+    '''mint()'''
+    def test_f_mint_owner(self, chain):
+        oo = deploy(chain)
 
-    acct = chain.web3.eth.coinbase
+        owner = chain.web3.eth.coinbase
 
-    # make sure there'll be something to mint
-    wait_n_blocks(chain, 10)
-    balance1 = oo.call().balanceOf(acct)
-    mintable1 = oo.call().get_mintable()
+        # make sure there'll be something to mint
+        wait_n_blocks(chain, 10)
+        balance1 = oo.call().balanceOf(owner)
+        mintable1 = oo.call().get_mintable()
 
-    # after some time - still no balance, can mint
-    assert balance1 == 0
-    assert mintable1 > 0
+        # after some time - still no balance, can mint
+        assert balance1 == 0
+        assert mintable1 > 0
 
-    txhash = oo.transact().mint()
-    txreceipt = chain.wait.for_receipt(txhash)
-    balance2 = oo.call().balanceOf(acct)
-    mintable2 = oo.call().get_mintable()
+        txhash = oo.transact().mint()
+        txreceipt = chain.wait.for_receipt(txhash)
+        balance2 = oo.call().balanceOf(owner)
+        mintable2 = oo.call().get_mintable()
 
-    # got balance, there's less left to mint
-    assert balance2 > 0
-    assert mintable1 > mintable2 > 0
+        # got balance, there's less left to mint
+        assert balance2 > 0
+        assert mintable1 > mintable2 > 0
 
-    return
+        return
+
+    def test_f_mint_non_owner(self, chain):
+        oo = deploy(chain)
+
+        mallory = chain.web3.eth.accounts[1]
+
+        # has no balance before minting
+        assert oo.call().balanceOf(mallory) == 0
+
+        # transaction gets reverted
+        with pytest.raises(TransactionFailed):
+            oo.transact({'from': mallory}).mint()
+
+        # has no balance after mint() attempt
+        assert oo.call().balanceOf(mallory) == 0
+
+        return
 
 def test_f_transfer(chain):
     oo = deploy(chain)
