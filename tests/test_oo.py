@@ -106,19 +106,24 @@ class TestMinting(object):
         wait_n_blocks(chain, 10)
         balance1 = oo.call().balanceOf(owner)
         mintable1 = oo.call().get_mintable()
+        supply1 = oo.call().totalSupply()
 
         # after some time - still no balance, can mint
         assert balance1 == 0
         assert mintable1 > 0
+        assert supply1 == 0
 
         txhash = oo.transact({'from': owner}).mint()
         txreceipt = chain.wait.for_receipt(txhash)
+
         balance2 = oo.call().balanceOf(owner)
         mintable2 = oo.call().get_mintable()
+        supply2 = oo.call().totalSupply()
 
         # got balance, there's less left to mint
         assert balance2 > 0
         assert mintable1 > mintable2 > 0
+        assert supply2 == mintable1
 
         # TODO: check event data
 
@@ -130,6 +135,7 @@ class TestMinting(object):
 
         # has no balance before minting
         assert oo.call().balanceOf(mallory) == 0
+        assert oo.call().totalSupply() == 0
 
         # transaction gets reverted
         with pytest.raises(TransactionFailed):
@@ -137,6 +143,7 @@ class TestMinting(object):
 
         # has no balance after mint() attempt
         assert oo.call().balanceOf(mallory) == 0
+        assert oo.call().totalSupply() == 0
 
         # TODO: check no event emitted
 
@@ -155,14 +162,20 @@ class TestBurning(object):
         txreceipt = chain.wait.for_receipt(txhash)
 
         balance1 = oo.call().balanceOf(owner)
+        supply1 = oo.call().totalSupply()
+
         assert balance1 > 0
+        assert supply1 == balance1
 
         # burn some
         txhash = oo.transact({'from': owner}).burn(amount)
         txreceipt = chain.wait.for_receipt(txhash)
 
         balance2 = oo.call().balanceOf(owner)
+        supply2 = oo.call().totalSupply()
+
         assert balance2 == (balance1 - amount)
+        assert supply2 == (supply1 - amount)
 
         # TODO: check event data
 
@@ -177,14 +190,20 @@ class TestBurning(object):
         txreceipt = chain.wait.for_receipt(txhash)
 
         balance1 = oo.call().balanceOf(owner)
+        supply1 = oo.call().totalSupply()
+
         assert balance1 > 0
+        assert supply1 == balance1
 
         # try burning more than we've got (gets reverted)
         with pytest.raises(TransactionFailed):
             oo.transact({'from': owner}).burn(balance1 + 1)
 
         balance2 = oo.call().balanceOf(owner)
+        supply2 = oo.call().totalSupply()
+
         assert balance2 == balance1
+        assert supply2 == supply1
 
         #TODO: check no event emitted
 

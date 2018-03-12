@@ -134,6 +134,8 @@
               (sstore *storloc-last-minted* (timestamp))
               (sstore-balance owner (+ (sload-balance owner)
                                        (mload *memloc-scratchpad*)))
+              (sstore *storloc-total-supply* (+ (sload *storloc-total-supply*)
+                                                (mload *memloc-scratchpad*)))
 
               ;; not using emit0 macro, since want direct memloc specification
               (log1 *event-minted* *memloc-scratchpad* 32)
@@ -159,6 +161,8 @@
               (when (> +amount+ (sload-balance +from+)) (revert 0 0))
 
               (sstore-balance +from+ (- (sload-balance +from+) +amount+))
+              (sstore *storloc-total-supply* (- (sload *storloc-total-supply*)
+                                                +amount+))
 
               (emit1 *event-burned* +from+ +amount+ 32)
               (return *true*)))
