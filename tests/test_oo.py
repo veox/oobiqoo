@@ -21,6 +21,7 @@ def deploy(chain, owner=None):
 
     assert oo.address != 0
     assert oo.address != owner
+    assert oo.call().owner() == owner
 
     return oo
 
@@ -77,17 +78,18 @@ def test_f_get_balance(chain):
 
 def test_f_get_mintable(chain):
     oo = deploy(chain)
+    nblocks = 10
 
     # mintable a bit after deployment (likely 1 block later)
     mintable1 = oo.call().get_mintable()
 
-    wait_n_blocks(chain, 10)
+    wait_n_blocks(chain, nblocks)
 
     # mintable on block2
     mintable2 = oo.call().get_mintable()
 
     assert mintable2 > mintable1
-    assert mintable2 <= 15 * waitnblocks
+    assert mintable2 <= 15 * nblocks
 
     return
 
@@ -99,7 +101,6 @@ class TestMinting(object):
     '''mint()'''
     def test_f_mint_owner(self, chain):
         oo = deploy(chain)
-
         owner = chain.web3.eth.coinbase
 
         # make sure there'll be something to mint
@@ -211,9 +212,8 @@ class TestBurning(object):
 
 def test_f_transfer(chain):
     oo = deploy(chain)
-
-    fromacct = chain.web3.eth.coinbase
-    toacct = chain.web3.eth.accounts[1]
+    owner = chain.web3.eth.coinbase
+    alice = chain.web3.eth.accounts[1]
     amount = 42
 
     # make sure there'll be something to mint
@@ -221,11 +221,11 @@ def test_f_transfer(chain):
 
     oo.transact().mint()
 
-    balance1 = oo.call().balanceOf(fromacct)
-    oo.transact().transfer(toacct, amount)
-    balance2 = oo.call().balanceOf(fromacct)
+    balance1 = oo.call().balanceOf(owner)
+    oo.transact().transfer(alice, amount)
+    balance2 = oo.call().balanceOf(owner)
 
-    assert oo.call().balanceOf(toacct) == amount
+    assert oo.call().balanceOf(alice) == amount
     assert (balance1 - balance2) == amount
 
     # TODO: check event data
