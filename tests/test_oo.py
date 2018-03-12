@@ -46,11 +46,13 @@ def test_f_get_owner(chain):
     assert oo.call().owner() == chain.web3.eth.coinbase
     return
 
+@pytest.mark.xfail(strict=True)
 def test_f_get_name(chain):
     oo = deploy(chain)
     assert oo.call().name() == 'oo'
     return
 
+@pytest.mark.xfail(strict=True)
 def test_f_get_symbol(chain):
     oo = deploy(chain)
     assert oo.call().symbol() == ('oo.' + str.lower(chain.web3.eth.coinbase[2:]))
