@@ -183,14 +183,14 @@
         "inputs": [
             {
                 "name": "amount",
-                "type": "uint56"
+                "type": "uint256"
             }
         ],
         "name": "burn",
         "outputs": [
             {
-                "name": "burned",
-                "type": "uint256"
+                "name": "success",
+                "type": "bool"
             }
         ],
         "payable": false,

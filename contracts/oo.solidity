@@ -26,7 +26,7 @@ contract oo {
     function approve_timed(address spender, uint256 amount, uint256 duration) public returns(bool success);
     function set_default_approval_duration(uint256 duration) public returns(bool success);
     function transfer_other(address token, address to, uint256 amount) public returns(bool success);
-    function burn(uint56 amount) public returns(uint256 burned);
+    function burn(uint256 amount) public returns(bool success);
     event default_approval_duration_set(uint256 duration);
     event burned(address indexed burner, uint256 amount);
     event minted(uint256 amount);
