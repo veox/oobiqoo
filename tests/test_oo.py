@@ -111,7 +111,7 @@ class TestMinting(object):
         assert balance1 == 0
         assert mintable1 > 0
 
-        txhash = oo.transact().mint()
+        txhash = oo.transact({'from': owner}).mint()
         txreceipt = chain.wait.for_receipt(txhash)
         balance2 = oo.call().balanceOf(owner)
         mintable2 = oo.call().get_mintable()
@@ -126,7 +126,6 @@ class TestMinting(object):
 
     def test_f_mint_non_owner(self, chain):
         oo = deploy(chain)
-
         mallory = chain.web3.eth.accounts[1]
 
         # has no balance before minting
@@ -147,16 +146,49 @@ class TestMinting(object):
 class TestBurning(object):
     '''burn()'''
     def test_f_burn_with_sufficient_balance(self, chain):
+        oo = deploy(chain)
+        owner = chain.web3.eth.coinbase
+        amount = 1
+
+        # make sure there's balance
+        txhash = oo.transact({'from': owner}).mint()
+        txreceipt = chain.wait.for_receipt(txhash)
+
+        balance1 = oo.call().balanceOf(owner)
+        assert balance1 > 0
+
+        # burn some
+        txhash = oo.transact({'from': owner}).burn(amount)
+        txreceipt = chain.wait.for_receipt(txhash)
+
+        balance2 = oo.call().balanceOf(owner)
+        assert balance2 == (balance1 - amount)
 
         # TODO: check event data
 
-        pass
+        return
 
     def test_f_burn_with_insufficient_balance(self, chain):
+        oo = deploy(chain)
+        owner = chain.web3.eth.coinbase
+
+        # make sure there's balance
+        txhash = oo.transact({'from': owner}).mint()
+        txreceipt = chain.wait.for_receipt(txhash)
+
+        balance1 = oo.call().balanceOf(owner)
+        assert balance1 > 0
+
+        # try burning more than we've got (gets reverted)
+        with pytest.raises(TransactionFailed):
+            oo.transact({'from': owner}).burn(balance1 + 1)
+
+        balance2 = oo.call().balanceOf(owner)
+        assert balance2 == balance1
 
         #TODO: check no event emitted
 
-        pass
+        return
 
 def test_f_transfer(chain):
     oo = deploy(chain)
