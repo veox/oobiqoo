@@ -138,7 +138,7 @@
                                                 (mload *memloc-scratchpad*)))
 
               ;; not using emit0 macro, since want direct memloc specification
-              (log1 *event-minted* *memloc-scratchpad* 32)
+              (log1 *memloc-scratchpad* 32 *event-minted*)
               (return *memloc-scratchpad* 32)))
 
        (fun *mint-and-transfer*
