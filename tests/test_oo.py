@@ -120,6 +120,8 @@ class TestMinting(object):
         assert balance2 > 0
         assert mintable1 > mintable2 > 0
 
+        # TODO: check event data
+
         return
 
     def test_f_mint_non_owner(self, chain):
@@ -137,7 +139,24 @@ class TestMinting(object):
         # has no balance after mint() attempt
         assert oo.call().balanceOf(mallory) == 0
 
+        # TODO: check no event emitted
+
         return
+
+@pytest.mark.incremental
+class TestBurning(object):
+    '''burn()'''
+    def test_f_burn_with_sufficient_balance(self, chain):
+
+        # TODO: check event data
+
+        pass
+
+    def test_f_burn_with_insufficient_balance(self, chain):
+
+        #TODO: check no event emitted
+
+        pass
 
 def test_f_transfer(chain):
     oo = deploy(chain)
@@ -157,5 +176,7 @@ def test_f_transfer(chain):
 
     assert oo.call().balanceOf(toacct) == amount
     assert (balance1 - balance2) == amount
+
+    # TODO: check event data
 
     return

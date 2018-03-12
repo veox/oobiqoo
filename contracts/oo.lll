@@ -32,7 +32,7 @@
   (def '*approve-timed*       0x31ef916a) ; approve_timed(address,uint256,uint256)
   (def '*set-def-approve-dur* 0x320e6c01) ; set_default_approval_duration(uint256)
   (def '*transfer-other*      0xca607c4e) ; transfer_other(address,address,uint256)
-  (def '*burn*                0x3a181577) ; burn(uint256)
+  (def '*burn*                0x42966c68) ; burn(uint256)
   ;; oobiqoo
   (def '*claim-ens-name*      0x6c8dea3b) ; claim_ENS_name()
   ;; dispatcher
@@ -43,17 +43,17 @@
   ;;; EVENTS
 
   ;; ERC20
-  (def '*event-transfer* ; Transfer(address,address,uint256)
+  (def '*event-transferred* ; Transfer(address,address,uint256)
        0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef)
-  (def '*event-approval* ; Approval(address,address,uint256)
+  (def '*event-approved*    ; Approval(address,address,uint256)
        0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925)
   ;; oo
   (def '*event-def-approve-dur-set* ; default_approval_duration_set(uint256)
-       0x0)
+       0x8bcc4ce19347d75e7b3310948278fa2d1a38b38b4e5a5e958adac5d6399310de)
   (def '*event-burned*              ; burned(address,uint256)
-       0x0)
+       0x8b1897d4e7a3b42570088bb1182eb6518c96a754d44bc9edd4669568bfa98326)
   (def '*event-minted*              ; minted(uint256)
-       0x0)
+       0x7dc0bf3ff15656545da2c5f0567962839fe379f74aacdfc4e8025bb24e0c082d)
 
   ;;; =========================================================================
   ;;; STORAGE LAYOUT
@@ -113,7 +113,7 @@
               (sstore-balance +from+ (- (sload-balance +from+) +amount+))
               (sstore-balance +to+   (+ (sload-balance +to+)   +amount+))
 
-              (emit2 *event-transfer* +from+ +to+ +amount+ 32)
+              (emit2 *event-transferred* +from+ +to+ +amount+ 32)
               (return *true*)))
 
        (fun *approve*
@@ -152,7 +152,16 @@
             (stop)) ; FIXME
 
        (fun *burn*
-            (stop)) ; FIXME
+            (seq
+              calldata-has-one-arg
+              (def '+from+   (caller))
+              (def '+amount+ cdload-arg1)
+              (when (> +amount+ (sload-balance +from+)) (revert 0 0))
+
+              (sstore-balance +from+ (- (sload-balance +from+) +amount+))
+
+              (emit1 *event-burned* +from+ +amount+ 32)
+              (return *true*)))
 
        ;;; --------------------------------------------------------------------
        ;;; dispatcher writes
