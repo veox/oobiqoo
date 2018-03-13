@@ -95,6 +95,10 @@ def test_f_get_mintable(chain):
 
     return
 
+@pytest.mark.xfail(strict=True)
+def test_f_get_allowance(self, chain):
+    assert False
+
 # =============================================================================
 # TESTS: read/write
 
@@ -233,3 +237,45 @@ def test_f_transfer(chain):
     # TODO: check event data
 
     return
+
+@pytest.mark.incremental
+class TestApprovals(object):
+    @pytest.mark.xfail(strict=True)
+    def test_f_approve(self, chain):
+        assert False
+        return
+
+    @pytest.mark.xfail(strict=True)
+    def test_f_approve_excessive(self, chain):
+        assert False
+        return
+
+    @pytest.mark.xfail(strict=True)
+    def test_f_approve_timed(self, chain):
+        assert False
+        return
+
+    @pytest.mark.xfail(strict=True)
+    def test_f_approve_timed_excessive(self, chain):
+        assert False
+        return
+
+    @pytest.mark.xfail(strict=True)
+    def test_f_approve_timed_outdated(self, chain):
+        assert False
+        return
+
+    @pytest.mark.xfail(strict=True)
+    def test_f_transfer_approved(self, chain):
+        assert False
+        return
+
+    @pytest.mark.xfail(strict=True)
+    def test_f_transfer_approved_excessive(self, chain):
+        assert False
+        return
+
+    @pytest.mark.xfail(strict=True)
+    def test_f_transfer_approved_outdated(self, chain):
+        assert False
+        return

@@ -72,16 +72,19 @@
   ;;; =========================================================================
   ;;; UTILS
 
-  ;;
-  (def 'sload-balance  (addr)     (sload  (+ *storbase-balance* addr)))
-  (def 'sstore-balance (addr val) (sstore (+ *storbase-balance* addr) val))
-
-  ;;
+  ;; accessors
   (def 'owner (sload *storloc-owner*))
   (def 'mintable (- (timestamp) (sload *storloc-last-minted*)))
 
-  ;;
+  ;; modifiers
   (def 'only-owner (unless (= (caller) owner) (revert 0 0)))
+
+  ;; balance read/write
+  (def 'sload-balance  (addr)     (sload  (+ *storbase-balance* addr)))
+  (def 'sstore-balance (addr val) (sstore (+ *storbase-balance* addr) val))
+
+  ;; allowance read/write
+  ;; TODO
 
   ;;; =========================================================================
   ;;; INIT
@@ -94,7 +97,7 @@
 
     (returnlll
      (seq
-       unpayable ; TODO: remove?
+       unpayable ; TODO: remove when having implemented withdraw(uint256)
        ;; FIXME: uncomment when testing properly as a library, not standalone
        ;; (when (= 0 (sload *storloc-owner*) (revert 0 0)))
        mstore-function-selector
