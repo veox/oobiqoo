@@ -27,6 +27,7 @@
   ;; oo
   (def '*get-mintable*        0xf42598f0) ; get_mintable()
   (def '*get-def-approve-dur* 0x64f8ad1f) ; get_default_approval_duration()
+  (def '*get-allowance-expires* 0x00000000) ; get_allowance_expires(address,address)
   (def '*mint*                0x1249c58b) ; mint()
   (def '*mint-and-transfer*   0x52ec8a58) ; mint_and_transfer(address,uint256)
   (def '*approve-timed*       0x31ef916a) ; approve_timed(address,uint256,uint256)
@@ -82,9 +83,6 @@
   ;; balance read/write
   (def 'sload-balance  (addr)     (sload  (+ *storbase-balance* addr)))
   (def 'sstore-balance (addr val) (sstore (+ *storbase-balance* addr) val))
-
-  ;; allowance read/write
-  ;; TODO
 
   ;;; =========================================================================
   ;;; INIT
@@ -221,7 +219,38 @@
               (return (sload (+ *storbase-balance* +addr+)))))
 
        (fun *get-allowance*
-            (revert 0 0)) ; FIXME
+            (seq
+              calldata-has-two-args
+              (def '+from+ cdload-arg1)
+              (def '+to+   cdload-arg2)
+              (when-is-not-address +from+ (revert 0 0))
+              (when-is-not-address +to+   (revert 0 0))
+              ;; no such thing as self-referential allowance
+              (when (= +from+ +to+) (revert 0 0))
+
+              ;; cache storage access (TODO: check if this confuses the optimiser)
+              (mstore *memloc-scratchpad* owner)
+
+              ;; TODO: check expiration, return 0 if so
+
+              ;; poor man's switch: allowance _from_ owner?..
+              (if (= +from+ (mload *memloc-scratchpad*))
+                  (seq
+                    (mstore *memloc-scratchpad*
+                            (sload (+ *storbase-allowance-from-this* +to+)))
+                    (return *memloc-scratchpad* 32))
+                  ;; no? allowance _to_ owner perhaps?..
+                  (if (= +to+ (mload *memloc-scratchpad*))
+                      (seq
+                        (mstore *memloc-scratchpad*
+                                (sload (+ *storbase-allowance-to-this* +from+)))
+                        (return *memloc-scratchpad* 32))
+                      ;; still no? generic allowance then
+                      (seq
+                        (def '+hash-packed+ 0x0) ; FIXME
+                        (sload (+ *storbase-allowance* +hash-packed+))
+                        ))
+                  )))
 
        ;;; --------------------------------------------------------------------
        ;;; oo reads
@@ -231,6 +260,9 @@
 
        (fun *get-def-approve-dur*
             (return (sload *storloc-def-approve-dur*)))
+
+       (fun *get-allowance-expires*
+            (revert 0 0)) ; FIXME
 
        ;;; --------------------------------------------------------------------
        ;;; ERC165 reads
