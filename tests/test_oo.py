@@ -266,16 +266,16 @@ class TestApprovals(object):
         return
 
     @pytest.mark.xfail(strict=True)
-    def test_f_transfer_approved(self, chain):
+    def test_f_collect(self, chain):
         assert False
         return
 
     @pytest.mark.xfail(strict=True)
-    def test_f_transfer_approved_excessive(self, chain):
+    def test_f_collect_excessive(self, chain):
         assert False
         return
 
     @pytest.mark.xfail(strict=True)
-    def test_f_transfer_approved_outdated(self, chain):
+    def test_f_collect_outdated(self, chain):
         assert False
         return
