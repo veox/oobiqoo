@@ -251,23 +251,31 @@
               ;; cache storage access (TODO: check if this confuses the optimiser)
               (mstore *memloc-scratchpad* owner)
 
-              ;; TODO: check expiration, return 0 if so
-
               ;; poor man's switch: allowance _from_ owner?..
               (when (= +from+ (mload *memloc-scratchpad*))
                 (seq
+                  ;; check expiration
+                  (when (>= (timestamp) (sload-allowance-from-this-expires +to+))
+                    (return 0))
                   (mstore *memloc-scratchpad* (sload-allowance-from-this +to+))
                   (return *memloc-scratchpad* 32)))
 
               ;; no? allowance _to_ owner perhaps?..
               (when (= +to+ (mload *memloc-scratchpad*))
                 (seq
+                  ;; check expiration
+                  (when (>= (timestamp) (sload-allowance-to-this-expires +from+))
+                    (return 0))
                   (mstore *memloc-scratchpad* (sload-allowance-to-this +from+))
                   (return *memloc-scratchpad* 32)))
 
               ;; still no? generic allowance then
-              (mstore *memloc-scratchpad* (sload-allowance +from+ +to+))
-              (return *memloc-scratchpad* 32)))
+              (seq
+                ;; check expiration
+                (when (>= (timestamp) (sload-allowance-expires +from+ +to+))
+                  (return 0))
+                (mstore *memloc-scratchpad* (sload-allowance +from+ +to+))
+                (return *memloc-scratchpad* 32))))
 
        ;;; --------------------------------------------------------------------
        ;;; oo reads
