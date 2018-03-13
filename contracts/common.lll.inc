@@ -17,28 +17,28 @@
   (def '*storbase-balance*
        0x0000000000000000000000000000000000000000000000000000000000000000)
 
-  ;; allowances: other to other (hash-packed)
-  ;; 0x 0100.... ........ ........ ........ ........ ........ ........ ........
-  (def '*storbase-allowance*
+  ;; allowances: from this very token's owner
+  ;; 0x 01000000 00000000 00000000 ........ ........ ........ ........ ........
+  (def '*storbase-allowance-from-this*
        0x0100000000000000000000000000000000000000000000000000000000000000)
-  ;; 0x 0200.... ........ ........ ........ ........ ........ ........ ........
-  (def '*storbase-allowance-expires*
+  ;; 0x 02000000 00000000 00000000 ........ ........ ........ ........ ........
+  (def '*storbase-allowance-from-this-expires*
        0x0200000000000000000000000000000000000000000000000000000000000000)
 
-  ;; allowances: from this very token's owner
+  ;; allowances: to this very token's owner
   ;; 0x 01010000 00000000 00000000 ........ ........ ........ ........ ........
-  (def '*storbase-allowance-from-this*
+  (def '*storbase-allowance-to-this*
        0x0101000000000000000000000000000000000000000000000000000000000000)
   ;; 0x 02010000 00000000 00000000 ........ ........ ........ ........ ........
-  (def '*storbase-allowance-from-this-expires*
+  (def '*storbase-allowance-to-this-expires*
        0x0201000000000000000000000000000000000000000000000000000000000000)
 
-  ;; allowances: to this very token's owner
-  ;; 0x 01020000 00000000 00000000 ........ ........ ........ ........ ........
-  (def '*storbase-allowance-to-this*
+  ;; allowances: other to other (hash-packed)
+  ;; 0x 0102.... ........ ........ ........ ........ ........ ........ ........
+  (def '*storbase-allowance*
        0x0102000000000000000000000000000000000000000000000000000000000000)
-  ;; 0x 02020000 00000000 00000000 ........ ........ ........ ........ ........
-  (def '*storbase-allowance-to-this-expires*
+  ;; 0x 0202.... ........ ........ ........ ........ ........ ........ ........
+  (def '*storbase-allowance-expires*
        0x0202000000000000000000000000000000000000000000000000000000000000)
 
   ;; which library implements this function?
