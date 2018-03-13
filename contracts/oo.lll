@@ -76,6 +76,7 @@
   ;; accessors
   (def 'owner (sload *storloc-owner*))
   (def 'mintable (- (timestamp) (sload *storloc-last-minted*)))
+  (def 'def-approve-dur (sload *storloc-def-approve-dur*))
 
   ;; modifiers
   (def 'only-owner (unless (= (caller) owner) (revert 0 0)))
@@ -85,10 +86,23 @@
   (def 'sstore-balance (addr val) (sstore (+ *storbase-balance* addr) val))
 
   ;; non-packed allowance from/to owner: reads
-  (def 'sload-allowance-from-this (to) (sload (+ *storbase-allowance-from-this* to)))
-  (def 'sload-allowance-to-this (from) (sload (+ *storbase-allowance-to-this* from)))
-  (def 'sload-allowance-from-this-expires (to) (sload (+ *storbase-allowance-from-this-expires* to)))
-  (def 'sload-allowance-to-this-expires (from) (sload (+ *storbase-allowance-to-this-expires* from)))
+  (def 'sload-allowance-from-this (to)
+       (sload (+ *storbase-allowance-from-this* to)))
+  (def 'sload-allowance-to-this (from)
+       (sload (+ *storbase-allowance-to-this* from)))
+  (def 'sload-allowance-from-this-expires (to)
+       (sload (+ *storbase-allowance-from-this-expires* to)))
+  (def 'sload-allowance-to-this-expires (from)
+       (sload (+ *storbase-allowance-to-this-expires* from)))
+  ;; non-packed allowance writes
+  (def 'sstore-allowance-from-this (to val)
+       (sstore (+ *storbase-allowance-from-this* to) val))
+  (def 'sstore-allowance-to-this (from val)
+       (sstore (+ *storbase-allowance-to-this* from) val))
+  (def 'sstore-allowance-from-this-expires (to val)
+       (sstore (+ *storbase-allowance-from-this-expires* to) val))
+  (def 'sstore-allowance-to-this-expires (from val)
+       (sstore (+ *storbase-allowance-to-this-expires* from) val))
 
   ;; 30-byte hash-packed allowance: location(s) in storage
   (def 'storpart-allowance (from to)
@@ -101,6 +115,12 @@
        (sload (+ *storbase-allowance* (storpart-allowance from to))))
   (def 'sload-allowance-expires (from to)
        (sload (+ *storbase-allowance-expires* (storpart-allowance from to))))
+  ;; hash-packed allowance writes
+  (def 'sstore-allowance (from to val)
+       (sstore (+ *storbase-allowance* (storpart-allowance from to)) val))
+  (def 'sstore-allowance-expires (from to val)
+       (sstore (+ *storbase-allowance-expires* (storpart-allowance from to)) val))
+
 
   ;;; =========================================================================
   ;;; INIT
@@ -138,7 +158,43 @@
               (return *true*)))
 
        (fun *approve*
-            (revert 0 0)) ; FIXME
+            (seq
+              calldata-has-two-args
+              (def '+from+   (caller))
+              (def '+to+     cdload-arg1)
+              (def '+amount+ cdload-arg2)
+              (when-is-not-address +to+   (revert 0 0))
+              ;; no such thing as self-referential allowance
+              (when (= +from+ +to+) (revert 0 0))
+
+              ;; cache storage access (TODO: check if this confuses the optimiser)
+              (mstore *memloc-scratchpad* owner)
+
+              ;; poor man's switch: allowance _from_ owner?..
+              (when (= +from+ (mload *memloc-scratchpad*))
+                (seq
+                  ;; set allowance
+                  (sstore-allowance-from-this +to+ +amount+)
+                  ;; set expiration
+                  (sstore-allowance-from-this-expires +to+ (+ (timestamp) def-approve-dur))
+                  (return *true*)))
+
+              ;; no? allowance _to_ owner perhaps?..
+              (when (= +to+ (mload *memloc-scratchpad*))
+                (seq
+                  ;; set allowance
+                  (sstore-allowance-to-this +from+ +amount+)
+                  ;; set expiration
+                  (sstore-allowance-to-this-expires +from+ (+ (timestamp) def-approve-dur))
+                  (return *true*)))
+
+              ;; still no? generic allowance then
+              (seq
+                ;; set allowance
+                (sstore-allowance +from+ +to+ +amount+)
+                ;; set expiration
+                (sstore-allowance-expires +from+ +to+ (+ (timestamp) def-approve-dur))
+                (return *true*))))
 
        (fun *collect*
             (revert 0 0)) ; FIXME
