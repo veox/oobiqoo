@@ -100,6 +100,8 @@
        ;; (when (= 0 (sload *storloc-owner*) (revert 0 0)))
        mstore-function-selector
 
+       ;; TODO: handle no-value no-data tx ASAP
+
        ;;; --------------------------------------------------------------------
        ;;; ERC20 writes
        (fun *transfer*
@@ -234,23 +236,23 @@
               ;; TODO: check expiration, return 0 if so
 
               ;; poor man's switch: allowance _from_ owner?..
-              (if (= +from+ (mload *memloc-scratchpad*))
-                  (seq
-                    (mstore *memloc-scratchpad*
-                            (sload (+ *storbase-allowance-from-this* +to+)))
-                    (return *memloc-scratchpad* 32))
-                  ;; no? allowance _to_ owner perhaps?..
-                  (if (= +to+ (mload *memloc-scratchpad*))
-                      (seq
-                        (mstore *memloc-scratchpad*
-                                (sload (+ *storbase-allowance-to-this* +from+)))
-                        (return *memloc-scratchpad* 32))
-                      ;; still no? generic allowance then
-                      (seq
-                        (def '+hash-packed+ 0x0) ; FIXME
-                        (sload (+ *storbase-allowance* +hash-packed+))
-                        ))
-                  )))
+              (when (= +from+ (mload *memloc-scratchpad*))
+                (seq
+                  (mstore *memloc-scratchpad*
+                          (sload (+ *storbase-allowance-from-this* +to+)))
+                  (return *memloc-scratchpad* 32)))
+              ;; no? allowance _to_ owner perhaps?..
+              (when (= +to+ (mload *memloc-scratchpad*))
+                (seq
+                  (mstore *memloc-scratchpad*
+                          (sload (+ *storbase-allowance-to-this* +from+)))
+                  (return *memloc-scratchpad* 32)))
+              ;; still no? generic allowance then
+              (seq
+                (def '+hash-packed+ 0x0) ; FIXME
+                (mstore *memloc-scratchpad*
+                        (sload (+ *storbase-allowance* +hash-packed+)))
+                (return *memloc-scratchpad* 32))))
 
        ;;; --------------------------------------------------------------------
        ;;; oo reads
