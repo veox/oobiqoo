@@ -117,10 +117,10 @@
               (return *true*)))
 
        (fun *approve*
-            (stop)) ; FIXME
+            (revert 0 0)) ; FIXME
 
        (fun *transfer-from*
-            (stop)) ; FIXME
+            (revert 0 0)) ; FIXME
 
        ;;; --------------------------------------------------------------------
        ;;; oo writes
@@ -142,16 +142,16 @@
               (return *memloc-scratchpad* 32)))
 
        (fun *mint-and-transfer*
-            (stop)) ; FIXME
+            (revert 0 0)) ; FIXME
 
        (fun *approve-timed*
-            (stop)) ; FIXME
+            (revert 0 0)) ; FIXME
 
        (fun *set-def-approve-dur*
-            (stop)) ; FIXME
+            (revert 0 0)) ; FIXME
 
        (fun *transfer-other*
-            (stop)) ; FIXME
+            (revert 0 0)) ; FIXME
 
        (fun *burn*
             (seq
@@ -171,7 +171,7 @@
        ;;; dispatcher writes
 
        (fun *upgrade*
-            (stop)) ; FIXME
+            (revert 0 0)) ; FIXME
 
        (fun *init*
             (seq
@@ -190,7 +190,7 @@
        ;;; oobiqoo writes
 
        (fun *claim-ens-name*
-            (stop)) ; FIXME
+            (revert 0 0)) ; FIXME
 
        ;;; --------------------------------------------------------------------
        ;;; ERC20 reads
@@ -218,7 +218,7 @@
               (return (sload (+ *storbase-balance* +addr+)))))
 
        (fun *get-allowance*
-            (stop)) ; FIXME
+            (revert 0 0)) ; FIXME
 
        ;;; --------------------------------------------------------------------
        ;;; oo reads
@@ -233,7 +233,7 @@
        ;;; ERC165 reads
 
        (fun *supports-interface*
-            (stop)) ; FIXME
+            (revert 0 0)) ; FIXME
 
        ;;; --------------------------------------------------------------------
        ;;; TODO: mo match
