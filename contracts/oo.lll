@@ -17,7 +17,7 @@
   (def '*get-symbol*          0x95d89b41) ; symbol()
   (def '*get-decimals*        0x313ce567) ; decimals()
   (def '*get-total-supply*    0x18160ddd) ; totalSupply()
-  (def '*get-balance-of*      0x70a08231) ; balanceOf(address)
+  (def '*get-balance*         0x70a08231) ; balanceOf(address)
   (def '*transfer*            0xa9059cbb) ; transfer(address,uint256)
   (def '*collect*             0x23b872dd) ; transferFrom(address,address,uint256)
   (def '*approve*             0x095ea7b3) ; approve(address,uint256)
@@ -231,7 +231,7 @@
        (fun *get-total-supply*
             (return (sload *storloc-total-supply*)))
 
-       (fun *get-balance-of*
+       (fun *get-balance*
             (seq
               calldata-has-one-arg
               (def '+addr+ cdload-arg1)
