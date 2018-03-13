@@ -8,6 +8,7 @@
 
   (def '*memloc-function-selector* 0x20)
   (def '*memloc-scratchpad*        0x40)
+  (def '*memloc-scratchpad-ext*    0x60)
 
   ;;; =========================================================================
   ;;; STORAGE LAYOUT

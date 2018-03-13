@@ -84,6 +84,18 @@
   (def 'sload-balance  (addr)     (sload  (+ *storbase-balance* addr)))
   (def 'sstore-balance (addr val) (sstore (+ *storbase-balance* addr) val))
 
+  ;; 30-byte hash-packed allowance location(s) in storage
+  (def 'storpart-allowance (from to)
+       (seq
+         (mstore *memloc-scratchpad*     from)
+         (mstore *memloc-scratchpad-ext* to)
+         (shr (keccak256 *memloc-scratchpad* 0x40) 16)))
+  ;; hash-packed allowance reads
+  (def 'sload-allowance (from to)
+       (sload (+ *storbase-allowance* (storpart-allowance from to))))
+  (def 'sload-allowance-expires (from to)
+       (sload (+ *storbase-allowance-expires* (storpart-allowance from to))))
+
   ;;; =========================================================================
   ;;; INIT
 
@@ -241,18 +253,18 @@
                   (mstore *memloc-scratchpad*
                           (sload (+ *storbase-allowance-from-this* +to+)))
                   (return *memloc-scratchpad* 32)))
+
               ;; no? allowance _to_ owner perhaps?..
               (when (= +to+ (mload *memloc-scratchpad*))
                 (seq
                   (mstore *memloc-scratchpad*
                           (sload (+ *storbase-allowance-to-this* +from+)))
                   (return *memloc-scratchpad* 32)))
+
               ;; still no? generic allowance then
-              (seq
-                (def '+hash-packed+ 0x0) ; FIXME
-                (mstore *memloc-scratchpad*
-                        (sload (+ *storbase-allowance* +hash-packed+)))
-                (return *memloc-scratchpad* 32))))
+              (mstore *memloc-scratchpad*
+                      (sload-allowance +from+ +to+))
+              (return *memloc-scratchpad* 32)))
 
        ;;; --------------------------------------------------------------------
        ;;; oo reads
