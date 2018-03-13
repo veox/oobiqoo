@@ -19,7 +19,7 @@
   (def '*get-total-supply*    0x18160ddd) ; totalSupply()
   (def '*get-balance-of*      0x70a08231) ; balanceOf(address)
   (def '*transfer*            0xa9059cbb) ; transfer(address,uint256)
-  (def '*transfer-from*       0x23b872dd) ; transferFrom(address,address,uint256)
+  (def '*collect*             0x23b872dd) ; transferFrom(address,address,uint256)
   (def '*approve*             0x095ea7b3) ; approve(address,uint256)
   (def '*get-allowance*       0xdd62ed3e) ; allowance(address,address)
   ;; ERC165
@@ -140,7 +140,7 @@
        (fun *approve*
             (revert 0 0)) ; FIXME
 
-       (fun *transfer-from*
+       (fun *collect*
             (revert 0 0)) ; FIXME
 
        ;;; --------------------------------------------------------------------
