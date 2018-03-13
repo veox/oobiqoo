@@ -222,9 +222,8 @@ def test_f_transfer(chain):
     alice = chain.web3.eth.accounts[1]
     amount = 42
 
-    # make sure there'll be something to mint
+    # make sure there's balance
     wait_n_blocks(chain, 10)
-
     oo.transact().mint()
 
     balance1 = oo.call().balanceOf(owner)
@@ -238,11 +237,50 @@ def test_f_transfer(chain):
 
     return
 
+# =============================================================================
+# TESTS: read/write allowances
+
+# TODO: have to check all of: o->a, a->o, a->b (currently only o->a done)
+
+@pytest.fixture(scope='function')
+def oo(chain):
+    '''Contract where two other accounts other than owner have balance.'''
+    oo = deploy(chain)
+    ali = chain.web3.eth.accounts[1]
+    bob = chain.web3.eth.accounts[2]
+    amount = 10
+
+    # make sure all of owner/ali/bob have balances
+    wait_n_blocks(chain, 10)
+    oo.transact().mint()
+    oo.transact().transfer(ali, amount)
+    oo.transact().transfer(bob, amount)
+
+    return oo
+
 @pytest.mark.incremental
 class TestApprovals(object):
-    @pytest.mark.xfail(strict=True)
-    def test_f_approve(self, chain):
-        assert False
+    def test_f_approve(self, chain, oo):
+        owner = chain.web3.eth.coinbase
+        alice = chain.web3.eth.accounts[1]
+        amount = 42
+
+        balance0owner = oo.call().balanceOf(owner)
+        balance0alice = oo.call().balanceOf(alice)
+        allowance0 = oo.call().allowance(owner, alice)
+
+        txhash = oo.transact({'from': owner}).approve(alice, amount)
+        txreceipt = chain.wait.for_receipt(txhash)
+        timestamp = chain.web3.eth.getBlock(txreceipt['blockHash'])['timestamp']
+
+        # balances haven't changed
+        assert oo.call().balanceOf(owner) == balance0owner
+        assert oo.call().balanceOf(alice) == balance0alice
+        # allowance has increased
+        assert oo.call().allowance(owner, alice) == (allowance0 + amount)
+        # FIXME: unimplemented!
+        #assert oo.call().get_allowance_expires(owner, alice) >= timestamp
+
         return
 
     @pytest.mark.xfail(strict=True)
