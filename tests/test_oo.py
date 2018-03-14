@@ -256,11 +256,15 @@ def oo(chain):
 
     return oo
 
+FWORD = 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
 @pytest.fixture(scope='function',
                 params=[
                     [0, 1, 42],
                     [1, 0, 42],
                     [1, 2, 42],
+                    [0, 1, FWORD],
+                    [1, 0, FWORD],
+                    [1, 2, FWORD],
                 ])
 def xfer(chain, request):
     '''Parametrise cases to test: who sets who's allowance, what its size is, and
@@ -273,6 +277,7 @@ def xfer(chain, request):
 @pytest.mark.incremental
 class TestApprovals(object):
     def test_f_approve(self, chain, oo, xfer):
+        '''Setting an allowance in general, without follow-up collection.'''
         src = xfer['src'] # from
         dst = xfer['dst'] # to
         amt = xfer['amt'] # amount
@@ -296,35 +301,18 @@ class TestApprovals(object):
 
         return
 
-    # TODO: all the following might be better off as parametrised tests!
-
-    @pytest.mark.xfail(strict=True)
-    def test_f_approve_excessive(self, chain):
-        assert False
-        return
-
-    @pytest.mark.xfail(strict=True)
-    def test_f_approve_unlimited(self, chain):
-        assert False
-        return
+    # TODO: some of the following might be better off as parametrised tests!
 
     @pytest.mark.xfail(strict=True)
     def test_f_approve_timed(self, chain):
-        assert False
-        return
-
-    @pytest.mark.xfail(strict=True)
-    def test_f_approve_timed_excessive(self, chain):
-        assert False
-        return
-
-    @pytest.mark.xfail(strict=True)
-    def test_f_approve_timed_unlimited(self, chain):
+        '''Setting an allowance with a specific expiration date, without
+           follow-up collection.'''
         assert False
         return
 
     @pytest.mark.xfail(strict=True)
     def test_f_approve_timed_backdated(self, chain):
+        '''Setting expiration earlier than right-now is not allowed.'''
         assert False
         return
 
@@ -335,15 +323,18 @@ class TestApprovals(object):
 
     @pytest.mark.xfail(strict=True)
     def test_f_collect_excessive(self, chain):
+        '''Trying to collect more than the allowance fails.'''
         assert False
         return
 
     @pytest.mark.xfail(strict=True)
     def test_f_collect_unlimited(self, chain):
+        '''Collecting when allowance is unlimited does not lower the allowance.'''
         assert False
         return
 
     @pytest.mark.xfail(strict=True)
     def test_f_collect_outdated(self, chain):
+        '''Collecting an allowance after expiration fails.'''
         assert False
         return
