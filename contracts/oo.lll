@@ -76,7 +76,7 @@
   ;; accessors
   (def 'owner (sload *storloc-owner*))
   (def 'mintable (- (timestamp) (sload *storloc-last-minted*)))
-  (def 'def-approve-dur (sload *storloc-def-approve-dur*))
+  (def 'def-approve-dur (sload *storloc-def-approve-dur*)) ; TODO: make per-acct
 
   ;; modifiers
   (def 'only-owner (unless (= (caller) owner) (revert 0 0)))
@@ -175,7 +175,7 @@
                 (seq
                   ;; set allowance
                   (sstore-allowance-from-this +to+ +amount+)
-                  ;; set expiration
+                  ;; set expiration (TODO: make per-acct)
                   (sstore-allowance-from-this-expires +to+ (+ (timestamp) def-approve-dur))
                   (return *true*)))
 
@@ -184,7 +184,7 @@
                 (seq
                   ;; set allowance
                   (sstore-allowance-to-this +from+ +amount+)
-                  ;; set expiration
+                  ;; set expiration (TODO: make per-acct)
                   (sstore-allowance-to-this-expires +from+ (+ (timestamp) def-approve-dur))
                   (return *true*)))
 
@@ -192,7 +192,7 @@
               (seq
                 ;; set allowance
                 (sstore-allowance +from+ +to+ +amount+)
-                ;; set expiration
+                ;; set expiration (TODO: make per-acct)
                 (sstore-allowance-expires +from+ +to+ (+ (timestamp) def-approve-dur))
                 (return *true*))))
 
@@ -259,7 +259,7 @@
               ;; populate configuration fields
               (sstore *storloc-owner* (caller))
               (sstore *storloc-last-minted* (timestamp))
-              (sstore *storloc-def-approve-dur* (* 60 60 24 7))
+              (sstore *storloc-def-approve-dur* (* 60 60 24 7)) ; TODO: make per-acct
               ;; success?..
               (return *true*)))
 
@@ -339,6 +339,7 @@
        (fun *get-mintable*
             (return mintable))
 
+       ;; TODO: make per-acct
        (fun *get-def-approve-dur*
             (return (sload *storloc-def-approve-dur*)))
 
