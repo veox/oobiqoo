@@ -240,11 +240,9 @@ def test_f_transfer(chain):
 # =============================================================================
 # TESTS: read/write allowances
 
-# TODO: have to check all of: o->a, a->o, a->b (currently only o->a done)
-
 @pytest.fixture(scope='function')
 def oo(chain):
-    '''Contract where two other accounts other than owner have balance.'''
+    '''Contract where two other accounts (other than owner) also have balance.'''
     oo = deploy(chain)
     ali = chain.web3.eth.accounts[1]
     bob = chain.web3.eth.accounts[2]
@@ -258,28 +256,43 @@ def oo(chain):
 
     return oo
 
+@pytest.fixture(scope='function',
+                params=[
+                    [0, 1, 42],
+                    [1, 0, 42],
+                    [1, 2, 42],
+                ])
+def xfer(chain, request):
+    '''Parametrise cases to test: who sets who's allowance, what its size is, and
+       TODO: how much is attempted to collect.'''
+    return {'src': chain.web3.eth.accounts[request.param[0]],
+            'dst': chain.web3.eth.accounts[request.param[1]],
+            'amt': request.param[2]
+    }
+
 @pytest.mark.incremental
 class TestApprovals(object):
-    def test_f_approve(self, chain, oo):
-        owner = chain.web3.eth.coinbase
-        alice = chain.web3.eth.accounts[1]
-        amount = 42
+    def test_f_approve(self, chain, oo, xfer):
+        src = xfer['src'] # from
+        dst = xfer['dst'] # to
+        amt = xfer['amt'] # amount
 
-        balance0owner = oo.call().balanceOf(owner)
-        balance0alice = oo.call().balanceOf(alice)
-        allowance0 = oo.call().allowance(owner, alice)
+        balance0src = oo.call().balanceOf(src)
+        balance0dst = oo.call().balanceOf(dst)
+        allowance0 = oo.call().allowance(src, dst)
 
-        txhash = oo.transact({'from': owner}).approve(alice, amount)
+        txhash = oo.transact({'from': src}).approve(dst, amt)
         txreceipt = chain.wait.for_receipt(txhash)
         timestamp = chain.web3.eth.getBlock(txreceipt['blockHash'])['timestamp']
 
         # balances haven't changed
-        assert oo.call().balanceOf(owner) == balance0owner
-        assert oo.call().balanceOf(alice) == balance0alice
+        assert oo.call().balanceOf(src) == balance0src
+        assert oo.call().balanceOf(dst) == balance0dst
         # allowance has increased
-        assert oo.call().allowance(owner, alice) == (allowance0 + amount)
+        assert oo.call().allowance(src, dst) == (allowance0 + amt)
+        # allowance expiration time is in the future
         # FIXME: unimplemented!
-        #assert oo.call().get_allowance_expires(owner, alice) >= timestamp
+        #assert oo.call().get_allowance_expires(src, dst) >= timestamp
 
         return
 
