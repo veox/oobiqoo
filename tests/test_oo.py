@@ -283,8 +283,15 @@ class TestApprovals(object):
 
         return
 
+    # TODO: all the following might be better off as parametrised tests!
+
     @pytest.mark.xfail(strict=True)
     def test_f_approve_excessive(self, chain):
+        assert False
+        return
+
+    @pytest.mark.xfail(strict=True)
+    def test_f_approve_unlimited(self, chain):
         assert False
         return
 
@@ -299,7 +306,12 @@ class TestApprovals(object):
         return
 
     @pytest.mark.xfail(strict=True)
-    def test_f_approve_timed_outdated(self, chain):
+    def test_f_approve_timed_unlimited(self, chain):
+        assert False
+        return
+
+    @pytest.mark.xfail(strict=True)
+    def test_f_approve_timed_backdated(self, chain):
         assert False
         return
 
@@ -310,6 +322,11 @@ class TestApprovals(object):
 
     @pytest.mark.xfail(strict=True)
     def test_f_collect_excessive(self, chain):
+        assert False
+        return
+
+    @pytest.mark.xfail(strict=True)
+    def test_f_collect_unlimited(self, chain):
         assert False
         return
 
