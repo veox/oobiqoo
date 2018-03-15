@@ -42,6 +42,11 @@
   (def '*storbase-allowance-expires*
        0x0202000000000000000000000000000000000000000000000000000000000000)
 
+  ;; default allowance durations (per-account)
+  ;; 0x 04000000 00000000 00000000 ........ ........ ........ ........ ........
+  (def '*storbase-def-approve-dur*
+       0x0400000000000000000000000000000000000000000000000000000000000000)
+
   ;; which library implements this function?
   ;; 0x ffffffff ffffffff ffffffff ffffffff 00000000 00000000 00000000 ........
   (def '*storbase-implementing-lib*

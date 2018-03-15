@@ -60,15 +60,15 @@
   ;;; STORAGE LAYOUT
 
   ;; single-slot configuration fields
-  (def '*storloc-owner*           (+ *storbase-config* 0x00))
-  (def '*storloc-name*            (+ *storbase-config* 0x01))
-  (def '*storloc-symbol*          (+ *storbase-config* 0x02))
-  (def '*storloc-decimals*        (+ *storbase-config* 0x03))
-  (def '*storloc-total-supply*    (+ *storbase-config* 0x04))
-  (def '*storloc-def-approve-dur* (+ *storbase-config* 0x05))
+  (def '*storloc-owner*                  (+ *storbase-config* 0x00))
+  (def '*storloc-name*                   (+ *storbase-config* 0x01))
+  (def '*storloc-symbol*                 (+ *storbase-config* 0x02))
+  (def '*storloc-decimals*               (+ *storbase-config* 0x03))
+  (def '*storloc-total-supply*           (+ *storbase-config* 0x04))
+  (def '*storloc-global-def-approve-dur* (+ *storbase-config* 0x10))
 
   ;; single-slot variables
-  (def '*storloc-last-minted*     (+ *storbase-vars* 0x00))
+  (def '*storloc-last-minted* (+ *storbase-vars* 0x00))
 
   ;;; =========================================================================
   ;;; UTILS
@@ -76,7 +76,6 @@
   ;; accessors
   (def 'owner (sload *storloc-owner*))
   (def 'mintable (- (timestamp) (sload *storloc-last-minted*)))
-  (def 'def-approve-dur (sload *storloc-def-approve-dur*)) ; TODO: make per-acct
 
   ;; modifiers
   (def 'only-owner (unless (= (caller) owner) (revert 0 0)))
@@ -121,6 +120,16 @@
   (def 'sstore-allowance-expires (from to val)
        (sstore (+ *storbase-allowance-expires* (storpart-allowance from to)) val))
 
+  ;; default approval duration (per-account)
+  (def 'sload-def-approve-dur (from)
+       ;; TODO: rework obnoxious use of memory - just the stack should be enough?..
+       (seq
+         (mstore *memloc-scratchpad* (sload (+ *storbase-def-approve-dur* from)))
+         (when (= 0 (mload *memloc-scratchpad*))
+           (mstore *memloc-scratchpad* (sload *storloc-global-def-approve-dur*)))
+         (mload *memloc-scratchpad*)))
+  (def 'sstore-def-approve-dur (from seconds)
+       (sstore (+ *storbase-def-approve-dur* from) seconds))
 
   ;;; =========================================================================
   ;;; INIT
@@ -175,8 +184,9 @@
                 (seq
                   ;; set allowance
                   (sstore-allowance-from-this +to+ +amount+)
-                  ;; set expiration (TODO: make per-acct)
-                  (sstore-allowance-from-this-expires +to+ (+ (timestamp) def-approve-dur))
+                  ;; set expiration, based on caller's default
+                  (sstore-allowance-from-this-expires +to+ (+ (timestamp)
+                                                              (sload-def-approve-dur +from+)))
                   (return *true*)))
 
               ;; no? allowance _to_ owner perhaps?..
@@ -184,16 +194,18 @@
                 (seq
                   ;; set allowance
                   (sstore-allowance-to-this +from+ +amount+)
-                  ;; set expiration (TODO: make per-acct)
-                  (sstore-allowance-to-this-expires +from+ (+ (timestamp) def-approve-dur))
+                  ;; set expiration, based on caller's default
+                  (sstore-allowance-to-this-expires +from+ (+ (timestamp)
+                                                              (sload-def-approve-dur +from+)))
                   (return *true*)))
 
               ;; still no? generic allowance then
               (seq
                 ;; set allowance
                 (sstore-allowance +from+ +to+ +amount+)
-                ;; set expiration (TODO: make per-acct)
-                (sstore-allowance-expires +from+ +to+ (+ (timestamp) def-approve-dur))
+                ;; set expiration, based on caller's default
+                (sstore-allowance-expires +from+ +to+ (+ (timestamp)
+                                                         (sload-def-approve-dur +from+)))
                 (return *true*))))
 
        (fun *collect*
@@ -225,7 +237,13 @@
             (revert 0 0)) ; FIXME
 
        (fun *set-def-approve-dur*
-            (revert 0 0)) ; FIXME
+            (seq
+              calldata-has-one-arg
+              (def '+from+    (caller))
+              (def '+seconds+ cdload-arg1)
+
+              (sstore-def-approve-dur +from+ +seconds+)
+              (return *true*)))
 
        (fun *transfer-other*
             (revert 0 0)) ; FIXME
@@ -259,7 +277,7 @@
               ;; populate configuration fields
               (sstore *storloc-owner* (caller))
               (sstore *storloc-last-minted* (timestamp))
-              (sstore *storloc-def-approve-dur* (* 60 60 24 7)) ; TODO: make per-acct
+              (sstore *storloc-global-def-approve-dur* (* 60 60 24 7)) ; 1 week
               ;; success?..
               (return *true*)))
 
@@ -339,9 +357,8 @@
        (fun *get-mintable*
             (return mintable))
 
-       ;; TODO: make per-acct
        (fun *get-def-approve-dur*
-            (return (sload *storloc-def-approve-dur*)))
+            (return (sload-def-approve-dur (caller))))
 
        (fun *get-allowance-expires*
             (revert 0 0)) ; FIXME
