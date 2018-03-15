@@ -89,10 +89,12 @@
   (def 'cdload-arg3 (calldataload 0x44))
 
   ;; --------------------------------------------------------------------------
-  ;; @author Ben Edgington <benjaminion>
+  ;; @author Ben Edgington <benjaminion>, Noel Maersk <veox>
   ;; @notice Ensure being called with the expected number of arguments.
   ;; @dev To be used with "web3-compatible functions" only.
 
+  (def 'calldata-empty          (unless (=  0x0 (calldatasize)) (revert 0 0)))
+  (def 'calldata-has-no-args    (unless (=  0x4 (calldatasize)) (revert 0 0)))
   (def 'calldata-has-one-arg    (unless (= 0x24 (calldatasize)) (revert 0 0)))
   (def 'calldata-has-two-args   (unless (= 0x44 (calldatasize)) (revert 0 0)))
   (def 'calldata-has-three-args (unless (= 0x64 (calldatasize)) (revert 0 0)))
