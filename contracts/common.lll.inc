@@ -157,6 +157,19 @@
 
   ;; --------------------------------------------------------------------------
   ;; @author Just about everybody.
+  ;; @notice Convenience macro for emitting events with no indexed chunks.
+  ;; @dev Currently does not support data longer than 32 bytes total.
+  ;; @param id 32-byte event identifier.
+  ;; @param data Non-indexed data to be placed in logs.
+  ;; @param datasize Number of bytes in data.
+
+  (def 'emit0 (id data datasize)
+       (seq
+         (mstore *memloc-scratchpad* data)
+         (log1 *memloc-scratchpad* datasize id)))
+
+  ;; --------------------------------------------------------------------------
+  ;; @author Just about everybody.
   ;; @notice Convenience macro for emitting events with 1 indexed chunk.
   ;; @dev Currently does not support data longer than 32 bytes total.
   ;; @param id 32-byte event identifier.

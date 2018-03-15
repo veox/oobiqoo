@@ -70,7 +70,7 @@ def test_f_get_total_supply(chain):
 
 def test_f_get_default_approval_duration(chain):
     oo = deploy(chain)
-    assert oo.call().get_default_approval_duration() == 60*60*24*7
+    assert oo.call().get_default_approval_duration() == (60*60*24*7)
     return
 
 def test_f_get_balance(chain):
@@ -239,6 +239,19 @@ def test_f_transfer(chain):
 
 # =============================================================================
 # TESTS: read/write allowances
+
+def test_f_set_default_approval_duration(chain):
+    oo = deploy(chain)
+    dur = 42
+
+    duration0 = oo.call().get_default_approval_duration()
+    oo.transact().set_default_approval_duration(dur)
+    duration1 = oo.call().get_default_approval_duration()
+
+    assert duration0 != duration1
+    assert oo.call().get_default_approval_duration() == dur
+
+    return
 
 @pytest.fixture(scope='function')
 def oo(chain):

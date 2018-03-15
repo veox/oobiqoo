@@ -76,7 +76,6 @@
   ;; accessors
   (def 'owner (sload *storloc-owner*))
   (def 'mintable (- (timestamp) (sload *storloc-last-minted*)))
-  (def 'def-approve-dur (sload *storloc-def-approve-dur*)) ; TODO: make per-acct
 
   ;; modifiers
   (def 'only-owner (unless (= (caller) owner) (revert 0 0)))
@@ -121,6 +120,9 @@
   (def 'sstore-allowance-expires (from to val)
        (sstore (+ *storbase-allowance-expires* (storpart-allowance from to)) val))
 
+  ;; default (global!) approval duration
+  (def 'sload-def-approve-dur (sload *storloc-def-approve-dur*))
+  (def 'sstore-def-approve-dur (dur) (sstore *storloc-def-approve-dur* dur))
 
   ;;; =========================================================================
   ;;; INIT
@@ -175,8 +177,9 @@
                 (seq
                   ;; set allowance
                   (sstore-allowance-from-this +to+ +amount+)
-                  ;; set expiration (TODO: make per-acct)
-                  (sstore-allowance-from-this-expires +to+ (+ (timestamp) def-approve-dur))
+                  ;; set expiration to global default
+                  (sstore-allowance-from-this-expires +to+ (+ (timestamp)
+                                                              sload-def-approve-dur))
                   (return *true*)))
 
               ;; no? allowance _to_ owner perhaps?..
@@ -184,16 +187,18 @@
                 (seq
                   ;; set allowance
                   (sstore-allowance-to-this +from+ +amount+)
-                  ;; set expiration (TODO: make per-acct)
-                  (sstore-allowance-to-this-expires +from+ (+ (timestamp) def-approve-dur))
+                  ;; set expiration to global default
+                  (sstore-allowance-to-this-expires +from+ (+ (timestamp)
+                                                              sload-def-approve-dur))
                   (return *true*)))
 
               ;; still no? generic allowance then
               (seq
                 ;; set allowance
                 (sstore-allowance +from+ +to+ +amount+)
-                ;; set expiration (TODO: make per-acct)
-                (sstore-allowance-expires +from+ +to+ (+ (timestamp) def-approve-dur))
+                ;; set expiration to global default
+                (sstore-allowance-expires +from+ +to+ (+ (timestamp)
+                                                         sload-def-approve-dur))
                 (return *true*))))
 
        (fun *collect*
@@ -225,7 +230,15 @@
             (revert 0 0)) ; FIXME
 
        (fun *set-def-approve-dur*
-            (revert 0 0)) ; FIXME
+            (seq
+              calldata-has-one-arg
+              (def '+from+     (caller))
+              (def '+duration+ cdload-arg1) ; in seconds
+
+              (sstore-def-approve-dur +duration+)
+
+              (emit0 *event-def-approve-dur-set* +duration+ 32)
+              (return *true*)))
 
        (fun *transfer-other*
             (revert 0 0)) ; FIXME
@@ -339,9 +352,8 @@
        (fun *get-mintable*
             (return mintable))
 
-       ;; TODO: make per-acct
        (fun *get-def-approve-dur*
-            (return (sload *storloc-def-approve-dur*)))
+            (return sload-def-approve-dur))
 
        (fun *get-allowance-expires*
             (revert 0 0)) ; FIXME
