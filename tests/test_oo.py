@@ -41,7 +41,7 @@ def test_deployment(chain):
     return
 
 # =============================================================================
-# TESTS: read-only
+# TESTS: read-only (mostly testing for "function selector recognised")
 
 def test_f_get_owner(chain):
     oo = deploy(chain)
@@ -97,9 +97,12 @@ def test_f_get_mintable(chain):
 
     return
 
-@pytest.mark.xfail(strict=True)
-def test_f_get_allowance(self, chain):
-    assert False
+# NOTE: main tests in TestAprovals class!
+def test_f_get_allowance(chain):
+    oo = deploy(chain)
+    assert oo.call().allowance(chain.web3.eth.coinbase,
+                               chain.web3.eth.accounts[1]) == 0
+    return
 
 # =============================================================================
 # TESTS: read/write
