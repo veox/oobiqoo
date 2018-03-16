@@ -7,6 +7,7 @@
   ;;; MEMORY LAYOUT
 
   (def '*memloc-function-selector* 0x20)
+  (def '*memloc-storloc-allowance* 0x20) ; overlap OK: only used after funsel
   (def '*memloc-scratchpad*        0x40)
   (def '*memloc-scratchpad-ext*    0x60)
 
@@ -41,6 +42,10 @@
   ;; 0x 0202.... ........ ........ ........ ........ ........ ........ ........
   (def '*storbase-allowance-expires*
        0x0202000000000000000000000000000000000000000000000000000000000000)
+
+  ;; expiration storloc from allowance storloc
+  (def 'esfas (storloc)
+       (+ (shl 0x01 248) storloc))
 
   ;; which library implements this function?
   ;; 0x ffffffff ffffffff ffffffff ffffffff 00000000 00000000 00000000 ........
