@@ -286,6 +286,7 @@ FWORD = 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
 @pytest.fixture(scope='function',
                 params=[
                     # from, to, allowance, transfer-amount
+                    # TODO: add should-succeed as 0th item
                     [0, 1, 42,    1],
                     [1, 0, 42,    1],
                     [1, 2, 42,    1],
@@ -308,7 +309,7 @@ def xfer(chain, request):
             'amt': request.param[3],
     }
 
-@pytest.mark.incremental
+#@pytest.mark.incremental
 class TestApprovals(object):
     def test_f_approve(self, chain, oo, xfer):
         '''Setting an allowance in general, without follow-up collection.'''
@@ -351,10 +352,9 @@ class TestApprovals(object):
 
     def test_f_collect(self, chain, oo, xfer):
         '''transferFrom()'''
-        src       = xfer['src'] # from
-        dst       = xfer['dst'] # to
-        allowance = xfer['all'] # allowance
-        amt       = xfer['amt'] # attempt to collect this amount
+        src = xfer['src'] # from
+        dst = xfer['dst'] # to
+        amt = xfer['amt'] # attempt to collect this amount
 
         # re-use test case to set allowance
         self.test_f_approve(chain, oo, xfer)
@@ -366,21 +366,16 @@ class TestApprovals(object):
         assert balance0src > 0
         assert allowance0 > 0
 
-        print(balance0src, balance0dst, allowance0)
+        # should succeed only if both sufficient allowance and balance
+        if allowance0 >= amt and balance0src >= amt:
+            oo.transact({'from': dst}).transferFrom(src, dst, amt)
+            assert oo.call().balanceOf(src) == (balance0src - amt)
+            assert oo.call().balanceOf(dst) == (balance0dst + amt)
+            assert oo.call().allowance(src, dst) == (allowance0 - amt)
+        else:
+            with pytest.raises(TransactionFailed):
+                oo.transact({'from': dst}).transferFrom(src, dst, amt)
 
-        txhash = oo.transact({'from': src}).transferFrom(src, dst, amt)
-        txreceipt = chain.wait.for_receipt(txhash)
-
-        assert oo.call().balanceOf(src) == (balance0src - amt)
-        assert oo.call().balanceOf(dst) == (balance0dst + amt)
-        assert oo.call().allowance(src, dst) == (allowance0src - amt)
-
-        return
-
-    @pytest.mark.xfail(strict=True)
-    def test_f_collect_excessive(self, chain):
-        '''Trying to collect more than the allowance fails.'''
-        assert False
         return
 
     @pytest.mark.xfail(strict=True)

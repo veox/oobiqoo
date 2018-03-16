@@ -179,6 +179,8 @@
               (when-is-not-address +to+ (revert 0 0))
               ;; no such thing as self-referential allowance
               (when (= +from+ +to+) (revert 0 0))
+              ;; callers should use regular transfer instead of forcing collection from themselves
+              (when (= +from+ (caller)) (revert 0 0))
 
               ;; get location in storage of allowance _to caller_, and store this storloc in-mem
               (mstore *memloc-storloc-allowance* (storloc-allowance +from+ (caller)))
