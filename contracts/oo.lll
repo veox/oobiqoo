@@ -120,7 +120,7 @@
   (def 'sstore-allowance-expires (from to val)
        (sstore (+ *storbase-allowance-expires* (storpart-allowance from to)) val))
 
-  (def 'allowance-storloc (from to)
+  (def 'storloc-allowance (from to)
        (seq
          ;; cache storage access (TODO: check if this confuses the optimiser)
          (mstore *memloc-scratchpad* owner)
@@ -186,7 +186,7 @@
               (when (= +from+ +to+) (revert 0 0))
 
               ;; get location in storage of allowance value, and store this storloc in-mem
-              (mstore *memloc-storloc-allowance* (allowance-storloc +from+ +to+))
+              (mstore *memloc-storloc-allowance* (storloc-allowance +from+ +to+))
 
               ;; set allowance
               (sstore (mload *memloc-storloc-allowance*) +amount+)
@@ -336,34 +336,12 @@
               ;; no such thing as self-referential allowance
               (when (= +from+ +to+) (revert 0 0))
 
-              ;; cache storage access (TODO: check if this confuses the optimiser)
-              (mstore *memloc-scratchpad* owner)
+              ;; get location in storage of _allowance_, and store this storloc in-mem
+              (mstore *memloc-storloc-allowance* (storloc-allowance +from+ +to+))
 
-              ;; poor man's switch: allowance _from_ owner?..
-              (when (= +from+ (mload *memloc-scratchpad*))
-                (seq
-                  ;; check expiration
-                  (when (>= (timestamp) (sload-allowance-from-this-expires +to+))
-                    (return 0))
-                  (mstore *memloc-scratchpad* (sload-allowance-from-this +to+))
-                  (return *memloc-scratchpad* 32)))
-
-              ;; no? allowance _to_ owner perhaps?..
-              (when (= +to+ (mload *memloc-scratchpad*))
-                (seq
-                  ;; check expiration
-                  (when (>= (timestamp) (sload-allowance-to-this-expires +from+))
-                    (return 0))
-                  (mstore *memloc-scratchpad* (sload-allowance-to-this +from+))
-                  (return *memloc-scratchpad* 32)))
-
-              ;; still no? generic allowance then
-              (seq
-                ;; check expiration
-                (when (>= (timestamp) (sload-allowance-expires +from+ +to+))
-                  (return 0))
-                (mstore *memloc-scratchpad* (sload-allowance +from+ +to+))
-                (return *memloc-scratchpad* 32))))
+              (if (>= (timestamp) (sload (esfas (mload *memloc-storloc-allowance*))))
+                  (return 0)
+                  (return (sload (mload *memloc-storloc-allowance*))))))
 
        ;;; --------------------------------------------------------------------
        ;;; oo reads
