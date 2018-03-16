@@ -180,19 +180,27 @@
               ;; no such thing as self-referential allowance
               (when (= +from+ +to+) (revert 0 0))
 
-              ;; 
+              ;; get location in storage of allowance _to caller_, and store this storloc in-mem
+              (mstore *memloc-storloc-allowance* (storloc-allowance +from+ (caller)))
+              ;; check if allowance expired
+              (when (>= (timestamp)
+                        (sload (esfas (mload *memloc-storloc-allowance*))))
+                (revert 0 0))
+
+              ;; get balance
               (mstore *memloc-scratchpad* (sload-balance +from+))
+              ;; check if it's sufficient
               (when (> +amount+ (mload *memloc-scratchpad*)) (revert 0 0))
 
-              ;; WIP!
-              ;; ...
-              ;; WIP!
-
-              (sstore-balance +from+ (- (sload-balance +from+) +amount+))
-              (sstore-balance +to+   (+ (sload-balance +to+)   +amount+))
-              ;;(sstore-allowance +from+ (caller) (- (mload *memloc-scratchpad-ext*) +amount+))
+              ;; change balances
+              (sstore-balance +from+ (- (mload *memloc-scratchpad*) +amount+))
+              (sstore-balance +to+   (+ (sload-balance +to+)        +amount+))
+              ;; reduce allowance of caller (not destination!)
+              (sstore (mload *memloc-storloc-allowance*)
+                      (- (sload (mload *memloc-storloc-allowance*)) +amount+))
 
               (emit2 *event-transferred* +from+ +to+ +amount+ 32)
+              ;; TODO: emit allowance_changed?
               (return *true*)))
 
        ;;; --------------------------------------------------------------------

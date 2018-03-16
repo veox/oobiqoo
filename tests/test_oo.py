@@ -285,34 +285,42 @@ def oo(chain):
 FWORD = 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
 @pytest.fixture(scope='function',
                 params=[
-                    [0, 1, 42],
-                    [1, 0, 42],
-                    [1, 2, 42],
-                    [0, 1, FWORD],
-                    [1, 0, FWORD],
-                    [1, 2, FWORD],
+                    # from, to, allowance, transfer-amount
+                    [0, 1, 42,    1],
+                    [1, 0, 42,    1],
+                    [1, 2, 42,    1],
+                    [0, 1, FWORD, 1],
+                    [1, 0, FWORD, 1],
+                    [1, 2, FWORD, 1],
+                    [0, 1, 42,    FWORD],
+                    [1, 0, 42,    FWORD],
+                    [1, 2, 42,    FWORD],
+                    [0, 1, FWORD, FWORD],
+                    [1, 0, FWORD, FWORD],
+                    [1, 2, FWORD, FWORD],
                 ])
 def xfer(chain, request):
     '''Parametrise cases to test: who sets who's allowance, what its size is, and
        TODO: how much is attempted to collect.'''
     return {'src': chain.web3.eth.accounts[request.param[0]],
             'dst': chain.web3.eth.accounts[request.param[1]],
-            'amt': request.param[2]
+            'all': request.param[2],
+            'amt': request.param[3],
     }
 
 @pytest.mark.incremental
 class TestApprovals(object):
     def test_f_approve(self, chain, oo, xfer):
         '''Setting an allowance in general, without follow-up collection.'''
-        src = xfer['src'] # from
-        dst = xfer['dst'] # to
-        amt = xfer['amt'] # amount
+        src       = xfer['src'] # from
+        dst       = xfer['dst'] # to
+        allowance = xfer['all'] # allowance
 
         balance0src = oo.call().balanceOf(src)
         balance0dst = oo.call().balanceOf(dst)
         allowance0 = oo.call().allowance(src, dst)
 
-        txhash = oo.transact({'from': src}).approve(dst, amt)
+        txhash = oo.transact({'from': src}).approve(dst, allowance)
         txreceipt = chain.wait.for_receipt(txhash)
         timestamp = chain.web3.eth.getBlock(txreceipt['blockHash'])['timestamp']
 
@@ -320,7 +328,7 @@ class TestApprovals(object):
         assert oo.call().balanceOf(src) == balance0src
         assert oo.call().balanceOf(dst) == balance0dst
         # allowance has increased
-        assert oo.call().allowance(src, dst) == (allowance0 + amt)
+        assert oo.call().allowance(src, dst) == (allowance0 + allowance)
         # allowance expiration time is in the future
         assert oo.call().get_allowance_expires(src, dst) >= timestamp
 
@@ -341,9 +349,32 @@ class TestApprovals(object):
         assert False
         return
 
-    @pytest.mark.xfail(strict=True)
-    def test_f_collect(self, chain):
-        assert False
+    def test_f_collect(self, chain, oo, xfer):
+        '''transferFrom()'''
+        src       = xfer['src'] # from
+        dst       = xfer['dst'] # to
+        allowance = xfer['all'] # allowance
+        amt       = xfer['amt'] # attempt to collect this amount
+
+        # re-use test case to set allowance
+        self.test_f_approve(chain, oo, xfer)
+
+        balance0src = oo.call().balanceOf(src)
+        balance0dst = oo.call().balanceOf(dst)
+        allowance0 = oo.call().allowance(src, dst)
+
+        assert balance0src > 0
+        assert allowance0 > 0
+
+        print(balance0src, balance0dst, allowance0)
+
+        txhash = oo.transact({'from': src}).transferFrom(src, dst, amt)
+        txreceipt = chain.wait.for_receipt(txhash)
+
+        assert oo.call().balanceOf(src) == (balance0src - amt)
+        assert oo.call().balanceOf(dst) == (balance0dst + amt)
+        assert oo.call().allowance(src, dst) == (allowance0src - amt)
+
         return
 
     @pytest.mark.xfail(strict=True)
