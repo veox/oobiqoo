@@ -100,8 +100,16 @@ def test_f_get_mintable(chain):
 # NOTE: main tests in TestAprovals class!
 def test_f_get_allowance(chain):
     oo = deploy(chain)
-    assert oo.call().allowance(chain.web3.eth.coinbase,
-                               chain.web3.eth.accounts[1]) == 0
+    owner = chain.web3.eth.coinbase
+    alice = chain.web3.eth.accounts[1]
+    assert oo.call().allowance(owner, alice) == 0
+    return
+
+def test_f_get_allowance_expires(chain):
+    oo = deploy(chain)
+    owner = chain.web3.eth.coinbase
+    alice = chain.web3.eth.accounts[1]
+    assert oo.call().get_allowance_expires(owner, alice) == 0
     return
 
 # =============================================================================
@@ -314,8 +322,7 @@ class TestApprovals(object):
         # allowance has increased
         assert oo.call().allowance(src, dst) == (allowance0 + amt)
         # allowance expiration time is in the future
-        # FIXME: unimplemented!
-        #assert oo.call().get_allowance_expires(src, dst) >= timestamp
+        assert oo.call().get_allowance_expires(src, dst) >= timestamp
 
         return
 

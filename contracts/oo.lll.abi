@@ -425,6 +425,29 @@
         "type": "function"
     },
     {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "from",
+                "type": "address"
+            },
+            {
+                "name": "to",
+                "type": "address"
+            }
+        ],
+        "name": "get_allowance_expires",
+        "outputs": [
+            {
+                "name": "timestamp",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
         "anonymous": false,
         "inputs": [
             {

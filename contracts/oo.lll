@@ -25,15 +25,15 @@
   ;; ERC165
   (def '*supports-interface*  0x01ffc9a7) ; supportsInterface(bytes4)
   ;; oo
-  (def '*get-mintable*        0xf42598f0) ; get_mintable()
-  (def '*get-def-approve-dur* 0x64f8ad1f) ; get_default_approval_duration()
-  (def '*get-allowance-expires* 0x00000000) ; get_allowance_expires(address,address)
-  (def '*mint*                0x1249c58b) ; mint()
-  (def '*mint-and-transfer*   0x52ec8a58) ; mint_and_transfer(address,uint256)
-  (def '*approve-timed*       0x31ef916a) ; approve_timed(address,uint256,uint256)
-  (def '*set-def-approve-dur* 0x320e6c01) ; set_default_approval_duration(uint256)
-  (def '*transfer-other*      0xca607c4e) ; transfer_other(address,address,uint256)
-  (def '*burn*                0x42966c68) ; burn(uint256)
+  (def '*get-mintable*          0xf42598f0) ; get_mintable()
+  (def '*get-def-approve-dur*   0x64f8ad1f) ; get_default_approval_duration()
+  (def '*get-allowance-expires* 0xf838b0e9) ; get_allowance_expires(address,address)
+  (def '*mint*                  0x1249c58b) ; mint()
+  (def '*mint-and-transfer*     0x52ec8a58) ; mint_and_transfer(address,uint256)
+  (def '*approve-timed*         0x31ef916a) ; approve_timed(address,uint256,uint256)
+  (def '*set-def-approve-dur*   0x320e6c01) ; set_default_approval_duration(uint256)
+  (def '*transfer-other*        0xca607c4e) ; transfer_other(address,address,uint256)
+  (def '*burn*                  0x42966c68) ; burn(uint256)
   ;; oobiqoo
   (def '*claim-ens-name*      0x6c8dea3b) ; claim_ENS_name()
   ;; dispatcher
@@ -325,7 +325,16 @@
             (return sload-def-approve-dur))
 
        (fun *get-allowance-expires*
-            (revert 0 0)) ; FIXME
+            (seq
+              calldata-has-two-args
+              (def '+from+ cdload-arg1)
+              (def '+to+   cdload-arg2)
+              (when-is-not-address +from+ (revert 0 0))
+              (when-is-not-address +to+   (revert 0 0))
+              ;; no such thing as self-referential allowance
+              (when (= +from+ +to+) (revert 0 0))
+
+              (return (sload (esfas (storloc-allowance +from+ +to+))))))
 
        ;;; --------------------------------------------------------------------
        ;;; ERC165 reads
