@@ -1,6 +1,6 @@
 #
 
-# TODO: check all events are correctly emitted!
+# TODO: check all events are correctly emitted (or not, on failure)
 
 import pytest
 from ethereum.tester import TransactionFailed

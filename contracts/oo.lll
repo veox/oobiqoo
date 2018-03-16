@@ -202,7 +202,30 @@
                 (return *true*))))
 
        (fun *collect*
-            (revert 0 0)) ; FIXME
+            (seq
+              calldata-has-three-args
+              (def '+from+   cdload-arg1)
+              (def '+to+     cdload-arg2)
+              (def '+amount+ cdload-arg3)
+              (when-is-not-address +from+ (revert 0 0))
+              (when-is-not-address +to+ (revert 0 0))
+              ;; no such thing as self-referential allowance
+              (when (= +from+ +to+) (revert 0 0))
+
+              ;; 
+              (mstore *memloc-scratchpad* (sload-balance +from+))
+              (when (> +amount+ (mload *memloc-scratchpad*)) (revert 0 0))
+
+              ;; WIP!
+              ;; ...
+              ;; WIP!
+
+              (sstore-balance +from+ (- (sload-balance +from+) +amount+))
+              (sstore-balance +to+   (+ (sload-balance +to+)   +amount+))
+              (sstore-allowance +from+ (caller) (- (mload *memloc-scratchpad-ext*) +amount+))
+
+              (emit2 *event-transferred* +from+ +to+ +amount+ 32)
+              (return *true*)))
 
        ;;; --------------------------------------------------------------------
        ;;; oo writes
