@@ -84,42 +84,14 @@
   (def 'sload-balance  (addr)     (sload  (+ *storbase-balance* addr)))
   (def 'sstore-balance (addr val) (sstore (+ *storbase-balance* addr) val))
 
-  ;; non-packed allowance from/to owner: reads
-  (def 'sload-allowance-from-this (to)
-       (sload (+ *storbase-allowance-from-this* to)))
-  (def 'sload-allowance-to-this (from)
-       (sload (+ *storbase-allowance-to-this* from)))
-  (def 'sload-allowance-from-this-expires (to)
-       (sload (+ *storbase-allowance-from-this-expires* to)))
-  (def 'sload-allowance-to-this-expires (from)
-       (sload (+ *storbase-allowance-to-this-expires* from)))
-  ;; non-packed allowance writes
-  (def 'sstore-allowance-from-this (to val)
-       (sstore (+ *storbase-allowance-from-this* to) val))
-  (def 'sstore-allowance-to-this (from val)
-       (sstore (+ *storbase-allowance-to-this* from) val))
-  (def 'sstore-allowance-from-this-expires (to val)
-       (sstore (+ *storbase-allowance-from-this-expires* to) val))
-  (def 'sstore-allowance-to-this-expires (from val)
-       (sstore (+ *storbase-allowance-to-this-expires* from) val))
-
   ;; 30-byte hash-packed allowance: location(s) in storage
   (def 'storpart-allowance (from to)
        (seq
          (mstore *memloc-scratchpad*     from)
          (mstore *memloc-scratchpad-ext* to)
          (shr (keccak256 *memloc-scratchpad* 0x40) 16)))
-  ;; hash-packed allowance reads
-  (def 'sload-allowance (from to)
-       (sload (+ *storbase-allowance* (storpart-allowance from to))))
-  (def 'sload-allowance-expires (from to)
-       (sload (+ *storbase-allowance-expires* (storpart-allowance from to))))
-  ;; hash-packed allowance writes
-  (def 'sstore-allowance (from to val)
-       (sstore (+ *storbase-allowance* (storpart-allowance from to)) val))
-  (def 'sstore-allowance-expires (from to val)
-       (sstore (+ *storbase-allowance-expires* (storpart-allowance from to)) val))
 
+  ;; determine allowance location in storage
   (def 'storloc-allowance (from to)
        (seq
          ;; cache storage access (TODO: check if this confuses the optimiser)
@@ -218,7 +190,7 @@
 
               (sstore-balance +from+ (- (sload-balance +from+) +amount+))
               (sstore-balance +to+   (+ (sload-balance +to+)   +amount+))
-              (sstore-allowance +from+ (caller) (- (mload *memloc-scratchpad-ext*) +amount+))
+              ;;(sstore-allowance +from+ (caller) (- (mload *memloc-scratchpad-ext*) +amount+))
 
               (emit2 *event-transferred* +from+ +to+ +amount+ 32)
               (return *true*)))
