@@ -388,10 +388,17 @@ class TestApprovals(object):
 
         return
 
-    @pytest.mark.xfail(strict=True)
-    def test_f_approve_timed_backdated(self, chain):
+    def test_f_approve_timed_backdated(self, chain, oo):
         '''Setting expiration earlier than right-now is not allowed.'''
-        assert False
+        src = chain.web3.eth.coinbase
+        dst = chain.web3.eth.accounts[1]
+        allowance = 42
+        duration = FWORD # force overflow
+
+        # transaction gets reverted
+        with pytest.raises(TransactionFailed):
+            oo.transact().approve_timed(dst, allowance, duration)
+
         return
 
     def test_f_collect(self, chain, oo, xfer):
