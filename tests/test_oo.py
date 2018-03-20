@@ -399,6 +399,17 @@ class TestApprovals(object):
         with pytest.raises(TransactionFailed):
             oo.transact().approve_timed(dst, allowance, duration)
 
+        # using zero-duration will work fine, though
+        txhash = oo.transact().approve_timed(dst, allowance, 0)
+        txreceipt = chain.wait.for_receipt(txhash)
+
+        allowance0 = oo.call().allowance(src, dst)
+        expires0 = oo.call().get_allowance_expires(src, dst)
+        timestamp0 = chain.web3.eth.getBlock(txreceipt['blockHash'])['timestamp']
+
+        assert allowance0 == 0
+        assert expires0 == timestamp0
+
         return
 
     def test_f_collect(self, chain, oo, xfer):
