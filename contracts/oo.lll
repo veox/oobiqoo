@@ -147,6 +147,7 @@
               (emit2 *event-transferred* +from+ +to+ +amount+ 32)
               (return *true*)))
 
+       ;; TODO: DELEGATECALL to *approve-timed*?..
        (fun *approve*
             (seq
               calldata-has-two-args
@@ -167,6 +168,7 @@
                       (+ (timestamp) sload-def-approve-dur))
 
               (emit2 *event-approved* +from+ +to+ +amount+ 32)
+              ;; TODO: emit event with approval expiration specified?..
               (return *true*)))
 
        (fun *collect*
@@ -228,7 +230,30 @@
             (revert 0 0)) ; FIXME
 
        (fun *approve-timed*
-            (revert 0 0)) ; FIXME
+            (seq
+              calldata-has-three-args
+              (def '+from+     (caller))
+              (def '+to+       cdload-arg1)
+              (def '+amount+   cdload-arg2)
+              (def '+duration+ cdload-arg3)
+              (when-is-not-address +to+   (revert 0 0))
+              ;; no such thing as self-referential allowance
+              (when (= +from+ +to+) (revert 0 0))
+              ;; duration does not overflow
+              (when (< (+ (timestamp) +duration+) (timestamp)) (revert 0 0))
+
+              ;; get location in storage of allowance value, and store this storloc in-mem
+              (mstore *memloc-storloc-allowance* (storloc-allowance +from+ +to+))
+
+              ;; set allowance
+              (sstore (mload *memloc-storloc-allowance*) +amount+)
+              ;; set its expiration date using provided duration
+              (sstore (esfas (mload *memloc-storloc-allowance*))
+                      (+ (timestamp) +duration+))
+
+              (emit2 *event-approved* +from+ +to+ +amount+ 32)
+              ;; TODO: emit event with approval expiration specified?..
+              (return *true*)))
 
        (fun *set-def-approve-dur*
             (seq

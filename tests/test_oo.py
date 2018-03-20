@@ -309,10 +309,10 @@ def xfer(chain, request):
             'amt': request.param[3],
     }
 
-#@pytest.mark.incremental
+@pytest.mark.incremental
 class TestApprovals(object):
     def test_f_approve(self, chain, oo, xfer):
-        '''Setting an allowance in general, without follow-up collection.'''
+        '''Setting an allowance in general (not testing follow-up collection).'''
         src       = xfer['src'] # from
         dst       = xfer['dst'] # to
         allowance = xfer['all'] # allowance
@@ -337,11 +337,55 @@ class TestApprovals(object):
 
     # TODO: some of the following might be better off as parametrised tests!
 
-    @pytest.mark.xfail(strict=True)
-    def test_f_approve_timed(self, chain):
-        '''Setting an allowance with a specific expiration date, without
-           follow-up collection.'''
-        assert False
+    def test_f_approve_timed(self, chain, oo, xfer):
+        '''Setting an allowance with a specific expiration date, (not testing
+           follow-up collection).'''
+        src       = xfer['src'] # from
+        dst       = xfer['dst'] # to
+        allowance = xfer['all'] # allowance
+        duration  = 42          # expires after
+
+        balance0src = oo.call().balanceOf(src)
+        balance0dst = oo.call().balanceOf(dst)
+        allowance0 = oo.call().allowance(src, dst)
+        expires0 = oo.call().get_allowance_expires(src, dst)
+        timestamp0 = chain.web3.eth.getBlock('latest')['timestamp']
+
+        txhash = oo.transact({'from': src}).approve_timed(dst, allowance, duration)
+        txreceipt = chain.wait.for_receipt(txhash)
+
+        balance1src = oo.call().balanceOf(src)
+        balance1dst = oo.call().balanceOf(dst)
+        allowance1 = oo.call().allowance(src, dst)
+        expires1 = oo.call().get_allowance_expires(src, dst)
+        timestamp1 = chain.web3.eth.getBlock(txreceipt['blockHash'])['timestamp']
+
+        # balances haven't changed
+        assert balance1src == balance0src
+        assert balance1dst == balance0dst
+        # allowance has increased
+        assert allowance1 == (allowance0 + allowance)
+        # allowance expiration time is in the future (but not too far)
+        assert expires1 > timestamp0
+        assert expires1 < (timestamp0 + duration + 30) # magicnum 30: ~ 2 blocks
+
+        wait_n_blocks(chain, 10)
+
+        balance2src = oo.call().balanceOf(src)
+        balance2dst = oo.call().balanceOf(dst)
+        allowance2 = oo.call().allowance(src, dst)
+        expires2 = oo.call().get_allowance_expires(src, dst)
+        timestamp2 = chain.web3.eth.getBlock('latest')['timestamp']
+
+        # balances still haven't changed
+        assert balance2src == balance1src
+        assert balance2dst == balance1dst
+        # allowance has expired
+        assert allowance2 == 0
+        # allowance expiration time hasn't changed, and is in the past
+        assert expires2 == expires1
+        assert expires2 < timestamp2
+
         return
 
     @pytest.mark.xfail(strict=True)
