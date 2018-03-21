@@ -14,14 +14,14 @@ In early implementation stage.
 [Populus](https://github.com/ethereum/populus/) and Python 3 are used for
 development.
 
-Although `requirements.txt` specifies `populus==2.1.0`, the actual version
-needed is the one in [my `populus/lll-to-merge` branch][populllus], at
-least until [`ethereum/populus` PR 408][populus-pr408] is merged.
+`requirements.txt` specifies `populllus==2.1.0`, which is as-of-yet
+unreleased. The actual package needed is the one in [this
+`populus/lll-to-merge` branch][populllus], at least until
+[`ethereum/populus` PR 408][populus-pr408] is merged.
 
-That is not likely to happen in the near future, since Piper Merriam, the
-original developer of Populus, has no time to maintain this tool. I might
-fork it eventually as Populllus, just so this very project can be built
-more easily.
+That is not likely to happen in the near future, since Populus currently
+lacks a maintainer. I might fork it eventually as Populllus, just so this
+very project can be built more easily - both by people and CI tools.
 
 [populllus]: https://github.com/veox/populus/tree/lll-to-merge
 [populus-pr408]: https://github.com/ethereum/populus/pull/408

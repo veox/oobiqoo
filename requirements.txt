@@ -1,2 +1,2 @@
-populus==2.1.0
+populllus==2.1.0
 eth-utils==0.7.4
