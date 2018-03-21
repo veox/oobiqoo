@@ -2,6 +2,7 @@
 
 [v0.1.0] SETTING A FALLEN CROW ON FIRE DOES NOT MAKE A PHOENIX
 ==============================================================
+
 Israel admits bombing suspected Syrian nuclear reactor in 2007
 --------------------------------------------------------------
 
@@ -16,6 +17,7 @@ delegation or registries.
 
 [v0.0.2] THE REAPER COMES TO HARVEST
 ====================================
+
 Build fast, fix later: Speed hurts Tesla
 ----------------------------------------
 
@@ -35,6 +37,7 @@ See notes in ``docs/2017-11-28-token-storage-layout.md``
 
 [v0.0.1] DEATH SHALL BE MY NAME
 ===============================
+
 At least 58 die in Mexico's strongest quake in 85 years
 -------------------------------------------------------
 
@@ -45,6 +48,7 @@ Use actual function instead of placeholder var.
 
 [v0.0.0] RDY FOR WAR
 ====================
+
 South Korea braces for possible new missile test to mark North's founding day
 -----------------------------------------------------------------------------
 
