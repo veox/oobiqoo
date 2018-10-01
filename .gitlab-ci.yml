@@ -1,0 +1,82 @@
+# Docs used:
+# https://docs.gitlab.com/ee/ci/caching/index.html#caching-python-dependencies
+# https://docs.gitlab.com/ee/ci/yaml/README.html#cache-policy
+
+variables:
+  LLLC_DIR: "$CI_PROJECT_DIR/.bin"
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache"
+
+stages:
+  - setup
+  - test
+
+cache:
+  # per-branch caches
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - ${LLLC_DIR}/
+    - ${PIP_CACHE_DIR}/
+
+build-lllc:
+  stage: setup
+  image: buildpack-deps:stretch
+  # job-specific, so `pip` is not run (not included in this docker image)
+  before_script:
+    - cat /etc/*release
+    - gcc --version
+  script:
+    # short-circuit: exit if `lllc` present (TODO: check version)
+    - test -x ${LLLC_DIR}/lllc && ${LLLC_DIR}/lllc --version && exit 0
+    # install missing dependencies
+    - apt-get -qq update
+    - apt-get -qy install cmake
+    - apt-get -qy install libboost-all-dev
+    # fetch, build, install
+    - wget "https://github.com/ethereum/solidity/releases/download/v0.4.25/solidity_0.4.25.tar.gz"
+    - tar -xf solidity_0.4.25.tar.gz && cd solidity_0.4.25
+    - mkdir -p build && cd build
+    - cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DLLLC_LINK_STATIC=ON -DTESTS=OFF ..
+    - make lllc
+    - install -D lllc/lllc ${LLLC_DIR}/lllc
+    # check (minimal)
+    - ${LLLC_DIR}/lllc --version
+
+before_script:
+  # print basic info for debugging
+  - cat /etc/*release
+  - python --version
+  - ${LLLC_DIR}/lllc --version
+  # install/activate virtualenv
+  - pip install virtualenv
+  - virtualenv .virtualenv
+  - source .virtualenv/bin/activate
+
+test:py3.5:
+  stage: test
+  image: python:3.5
+  script:
+    - pip install -r requirements.txt
+    - PATH="$LLLC_DIR:$PATH" pytest tests
+
+test:py3.6:
+  stage: test
+  image: python:3.6
+  script:
+    # install libsecp256k1, a nested dependency for some `populllus` packages X_X
+    - apt-get -qq update
+    - apt-get -qy install libsecp256k1-dev
+    # continue with "regular" python part
+    - pip install -r requirements.txt
+    - PATH="$LLLC_DIR:$PATH" pytest tests
+
+# an almost-exact copy of test:py3.6 above
+test:py3.7:
+  stage: test
+  image: python:3.7
+  script:
+    # install libsecp256k1, a nested dependency for some `populllus` packages X_X
+    - apt-get -qq update
+    - apt-get -qy install libsecp256k1-dev
+    # continue with "regular" python part
+    - pip install -r requirements.txt
+    - PATH="$LLLC_DIR:$PATH" pytest tests
