@@ -1,2 +1,3 @@
+*.lll linguist-language=lisp
 *.sol linguist-language=Solidity
 *.solidity linguist-language=Solidity
